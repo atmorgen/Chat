@@ -25,13 +25,16 @@ export class ChatWindowComponent implements OnInit {
   @HostListener('mousedown', ['$event'])
     onmousedown(e){
       this.target = e.target;
+      if(e.target.id == 'wipeButton') this.wipe();
     }
 
   @HostListener('keyup',['$event'])
     onkeyup(e){
       if(this.target.id == 'textWindow' && e.key == "Enter"){
-        let input = (<HTMLTextAreaElement>this.target).value
-        console.log(input)
+        let input = (<HTMLTextAreaElement>this.target).value.toString();
+        (<HTMLTextAreaElement>this.target).value = '';
+        this.jsonClean(input)
+        if(input.trim() == '/wipe') this.wipe()
       }
     }
 
@@ -42,34 +45,53 @@ export class ChatWindowComponent implements OnInit {
         var returnArr = [];
         snapshot.forEach(childSnapshot=> {
           var item = childSnapshot.val();
-          item.studyRefKey = childSnapshot.key;
           
           returnArr.push(item);
         });
     }) 
   }
 
-  enter(){
+  jsonClean(input: string){
+    let userName = (<HTMLInputElement>document.getElementById('userName')).value
+    
+    let output = JSON.parse(`
+      {
+        "user":"${userName}",
+        "text":"${input.trim()}"
+      }
+    `);
+
+    let location = 'chat/session';
+    let key = document.getElementById('refKey').getAttribute('key');
+    if(key != '') location = 'chat/' + key + '/session'
+    console.log(location)
+    this.postData(location,output);
+  }
+
+  wipe(){
+
+    this.db.database.ref("chat").remove();
+
+    let userName = (<HTMLInputElement>document.getElementById('userName')).value
+
+    let output = JSON.parse(`{
+      "session":[
+        {
+          "user":"${userName}",
+          "text":"Database was Wiped"
+        }
+      ]
+    }`)
+    
+    document.getElementById('refKey').setAttribute('key',this.postData('chat',output));
+    
     
   }
-
-key;
-//This references the AngularFireBase db which is created in 
-postData(ref,id){
-  var updates = {};
-  let jsonHolder = JSON.parse(document.getElementById('visitDatabase').getAttribute('dataset'))
-  updates[jsonHolder.studyRefKey] = JSON.parse(document.getElementById(id).getAttribute('dataset'));
   
-  if(jsonHolder.studyRefKey == ""){
-    var fbKey = this.db.database.ref(ref).push(JSON.parse(document.getElementById(id).getAttribute('dataset'))); 
-    this.key = fbKey.key;
-    jsonHolder.studyRefKey = fbKey.key
-    document.getElementById('visitDatabase').setAttribute('dataset',JSON.stringify(jsonHolder))
-  }else{
-    this.db.database.ref(ref).update(updates);
+  //This references the AngularFireBase db which is created in 
+  postData(ref,input: JSON){
+    var fbKey = this.db.database.ref(ref).push(input); 
+    
+    return fbKey.key
   }
-  this.getData()
-}
-  
-
 }
