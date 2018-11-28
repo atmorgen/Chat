@@ -1,0 +1,144 @@
+/* Style the tab content */
+.containerDiv {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    height: 665px;
+}
+
+ /*style visits header*/
+ #filterHeader {
+    position: fixed;
+    text-align: center;
+    font-size: 18px;
+    width: 20%;
+    font-family: 'Montserrat', sans-serif; 
+    font-weight: 700;
+    border-bottom: 1px solid lightgray;
+    background: rgb(70, 90, 150);
+    color: white;
+ }
+
+ #filterHeader p {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+ }
+
+/*left align visists and overflow auto style scroll bar*/
+#filterCanvas{
+    width: 20%;
+    height: calc(100vh - 80px);
+    overflow-y: hidden;
+    margin-top: 35px;
+}
+
+
+.filterOptions{
+    cursor: pointer;
+    padding: 5px 5px;
+}
+
+.filterOptions:hover{
+    background-color: slategray;
+    color: white; 
+}
+
+.filterOptions.active{
+    background-color: rgb(133,143,150);
+    color: white;
+}
+
+#assignmentHeader{
+    position: fixed;
+    text-align: center;
+    font-size: 18px;
+    margin-left: 35%;
+    width: 40%;
+    font-family: 'Montserrat', sans-serif; 
+    font-weight: 700;
+    border-bottom: 1px solid lightgray;
+    background: rgb(70, 90, 150);
+    color: white;
+}
+
+#assignmentHeader p{
+    padding-top: 6px;
+    padding-bottom: 6px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+/*styling right side of page, procedures*/
+#assignmentViewCanvas {
+    margin-top: 35px;
+    background: rgb(219, 223, 227, .5);
+    width: 80%;
+    height: calc(100vh - 145px);
+    overflow: auto;
+}
+
+#procedureHeader {
+    margin-top: 5px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    display: flex;
+    justify-content: flex-start;
+    text-align: center;
+    font-size: 18px;
+    color: rgb(0, 14, 63);
+
+}
+
+#procedureHeader p {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+#procedureNameHeader {
+    margin-left: 20px;
+    margin-right: 10px;
+    padding-right: 10px;
+    /*border-right: 1px solid lightgray;*/
+}
+
+#procedureHeaderLeft {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-top: 5px;
+}
+
+.assignView {
+    background-color: inherit;
+    color: #444;
+    cursor: pointer;
+    padding: 5px 5px;
+    width: 100%;
+    text-align: left;
+    outline: none;
+    transition: 0.4s;
+    border: none;
+    border-bottom: 1px solid rgb(70, 90, 150, .5);
+ }
+
+ .assignView::-moz-focus-inner { 
+    border: 0; 
+  }
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.assignView:hover {
+    background-color: rgb(133, 143, 150);
+    color: white;
+}
+
+#textWindow{
+    margin-left: 270px;
+    width: 1000px;
+    height: 100px;
+    resize: none;
+}
+
