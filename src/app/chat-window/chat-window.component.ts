@@ -48,6 +48,7 @@ export class ChatWindowComponent implements OnInit {
           
           returnArr.push(item);
         });
+        console.log(returnArr)
     }) 
   }
 
