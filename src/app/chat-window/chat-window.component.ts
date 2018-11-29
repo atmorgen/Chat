@@ -22,17 +22,11 @@ export class ChatWindowComponent implements OnInit {
     this.getData();
   }
 
-  @HostListener('mousedown', ['$event'])
-    onmousedown(e){
-      this.target = e.target;
-      if(e.target.id == 'wipeButton') this.wipe();
-    }
-
   @HostListener('keyup',['$event'])
     onkeyup(e){
-      if(this.target.id == 'textWindow' && e.key == "Enter"){
-        let input = (<HTMLTextAreaElement>this.target).value.toString();
-        (<HTMLTextAreaElement>this.target).value = '';
+      if(document.getElementById('textWindow') == document.activeElement && e.key == "Enter"){
+        let input = (<HTMLInputElement>document.getElementById('textWindow')).value.toString();
+        (<HTMLTextAreaElement>document.getElementById('textWindow')).value = '';
         this.jsonClean(input)
         if(input.trim() == '/wipe') this.wipe()
       }
@@ -48,7 +42,34 @@ export class ChatWindowComponent implements OnInit {
           
           returnArr.push(item);
         });
+        this.getKey(returnArr)
+        this.updateNgFor(returnArr)
     }) 
+  }
+
+  getKey(returnArr){
+
+    if(returnArr.length == 2){
+      let key = '';
+
+      for(key in returnArr[0]){
+        key = returnArr[0][key]
+        document.getElementById('refKey').setAttribute('key',key)
+      }
+    }
+  }
+
+  updateNgFor(returnArr){
+
+    let key = document.getElementById('refKey').getAttribute('key')
+    if(returnArr.length == 2){
+      let jsonHolder = returnArr[1][key]['session'];
+      this.assignmentsNgFor = JSON.parse('[]')
+
+      for(key in jsonHolder){
+        this.assignmentsNgFor.push(jsonHolder[key])
+      }
+    }
   }
 
   jsonClean(input: string){
@@ -61,16 +82,15 @@ export class ChatWindowComponent implements OnInit {
       }
     `);
 
-    let location = 'chat/session';
     let key = document.getElementById('refKey').getAttribute('key');
-    if(key != '') location = 'chat/' + key + '/session'
-    console.log(location)
+    let location = 'chat/sessions/' + key + '/session' ;
+    
     this.postData(location,output);
   }
 
   wipe(){
 
-    this.db.database.ref("chat").remove();
+    this.db.database.ref("chat/key").remove();
 
     let userName = (<HTMLInputElement>document.getElementById('userName')).value
 
@@ -83,13 +103,12 @@ export class ChatWindowComponent implements OnInit {
       ]
     }`)
     
-    document.getElementById('refKey').setAttribute('key',this.postData('chat',output));
-    
-    
+    this.postData('chat/key',this.postData('chat/sessions',output));
+        
   }
-  
+
   //This references the AngularFireBase db which is created in 
-  postData(ref,input: JSON){
+  postData(ref,input){
     var fbKey = this.db.database.ref(ref).push(input); 
     
     return fbKey.key

@@ -139,8 +139,8 @@
 #textWindow{
     position: relative;
     margin-left: 20%;
-    width: 78%;
-    height: 75px;
+    margin-top: 1%;
+    width: 80%;
     resize: none;
 }
 
