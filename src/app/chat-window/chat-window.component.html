@@ -1,6 +1,6 @@
 <div id="Assignments" class="tabcontent">
   <div class="containerDiv">
-    <div id="filterHeader"><p>Users</p><button id='wipeButton'>Wipe Database</button></div>
+    <div id="filterHeader"><p>Users</p></div>
     <div id="filterCanvas">
       <li>
         <ul class='filterOptions'>User 1</ul>
@@ -12,14 +12,14 @@
       <div class='buttonForloop' *ngFor="let json of assignmentsNgFor">
         <button class="assignView">
           <li>
-            <ul>Name: {{json.study}}</ul>
-            <ul>Text: {{json.assigneeDept}}</ul>
+            <ul>Name: {{json.user}}</ul>
+            <ul>Text: {{json.text}}</ul>
           </li>
         </button>
       </div>
     </div>
   </div>
-  <textarea id='textWindow'></textarea>
+  <input id='textWindow' type="text">
   <div id='refKey'></div>
 </div>
   
