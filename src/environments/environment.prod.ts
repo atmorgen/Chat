@@ -1,12 +1,12 @@
 export const environment = {
       production: true,
       firebase: {
-      apiKey: "AIzaSyDWOnLiqv0CH18YMIL7-9Oj9gtejG03CMQ",
-      authDomain: "engage-96c98.firebaseapp.com",
-      databaseURL: "https://engage-96c98.firebaseio.com",
-      projectId: "engage-96c98",
-      storageBucket: "engage-96c98.appspot.com",
-      messagingSenderId: "374746891074"
+      apiKey: "AIzaSyDHIofyHp3p4S2PO81Lgwjx-glrp6FTYO8 ",
+      authDomain: "chatapp-4336btest.firebaseapp.com",
+      databaseURL: "https://chatapp-4336b.firebaseio.com",
+      projectId: "chatapp-4336b",
+      storageBucket: "chatapp-4336b.appspot.com",
+      messagingSenderId: "648244384297"
   
     }
   };

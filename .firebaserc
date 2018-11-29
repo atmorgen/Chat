@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "engage-96c98"
+    "default": "chatapp-4336b",
+    "chat": "chatapp-4336b"
   }
 }
