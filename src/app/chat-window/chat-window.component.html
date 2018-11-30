@@ -11,9 +11,9 @@
     <div id="assignmentViewCanvas">
       <div class='buttonForloop' *ngFor="let json of assignmentsNgFor">
         <button class="assignView">
-          <li>
-            <ul>Name: {{json.user}}</ul>
-            <ul>Text: {{json.text}}</ul>
+          <li class='list'>
+            <ul class='nameText'>Name: {{json.user}}</ul>
+            <ul class='text'>{{json.text}}</ul>
           </li>
         </button>
       </div>
