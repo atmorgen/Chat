@@ -1,12 +1,13 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, AfterViewInit, HostListener, ViewChildren } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database'
+import { Window } from 'selenium-webdriver';
 
 @Component({
   selector: 'app-chat-window',
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.css']
 })
-export class ChatWindowComponent implements OnInit {
+export class ChatWindowComponent implements AfterViewInit {
 
   assignmentsNgFor:any;
   target: HTMLElement;
@@ -17,9 +18,11 @@ export class ChatWindowComponent implements OnInit {
       })
     }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     //subscribe on init
     this.getData();
+    this.newMessage();
+    this.startFlash()
   }
 
   @HostListener('keyup',['$event'])
@@ -47,7 +50,8 @@ export class ChatWindowComponent implements OnInit {
         setTimeout(() => {
           document.getElementById('assignmentViewCanvas').scrollTop = document.getElementById('assignmentViewCanvas').scrollHeight;
         }, 200);
-        
+
+        this.newMessageBoo = true;
     }) 
   }
 
@@ -117,4 +121,43 @@ export class ChatWindowComponent implements OnInit {
     
     return fbKey.key
   }
+
+  windowFocus = true;
+  newMessageBoo = false;
+
+  @HostListener('document:keydown',['$event'])
+    onkeydown(){
+      this.newMessageBoo = false;
+    }
+
+  @HostListener('document:mousedown',['$event'])
+    onmousedown(){
+      this.newMessageBoo = false;
+    }
+
+  @HostListener('document:mousemove',['$event'])
+    onmousemove(){
+      this.newMessageBoo = false;
+    }
+
+  //subscribes to an event that runs when assignments have finished rendering
+  newMessage(){
+    window.onfocus = x=> { this.newMessageBoo = false; };
+  }
+
+
+  startFlash(){
+
+    let flash = false;
+    let inter = setInterval(() => {
+      if(this.newMessageBoo){
+        flash = !flash
+        if(flash) document.title = 'New Message'
+        else document.title = 'Check yo Messages, Brah'
+      }else{
+        document.title = 'Chat'
+      }
+    }, 1500);
+  }
+  
 }

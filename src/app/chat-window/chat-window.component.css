@@ -73,10 +73,11 @@
 
 /*styling right side of page, procedures*/
 #assignmentViewCanvas {
-    margin-top: 35px;
+    margin-top: calc(100vh - 600px);
     background: rgb(219, 223, 227, .5);
-    width: 80%;
-    height: calc(100vh - 145px);
+    border: 1px solid whitesmoke;
+    width: 75%;
+    height: calc(100vh - 245px);
     overflow: scroll;
 }
 
@@ -115,7 +116,7 @@
 
 .assignView {
     background-color: inherit;
-    color: #444;
+    color: white;
     cursor: pointer;
     padding: 5px 5px;
     width: 100%;
@@ -123,7 +124,7 @@
     outline: none;
     transition: 0.4s;
     border: none;
-    border-bottom: 1px solid rgb(70, 90, 150, .5);
+    border-bottom: 1px solid rgb(70, 90, 150);
  }
 
  .assignView::-moz-focus-inner { 
@@ -139,8 +140,8 @@
 #textWindow{
     position: relative;
     margin-left: 20%;
-    margin-top: 1%;
-    width: 80%;
+    width: 75%;
+    top: calc(100vh - 875px);
     resize: none;
 }
 
