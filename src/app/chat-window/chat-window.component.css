@@ -35,7 +35,6 @@
     margin-top: 35px;
 }
 
-
 .filterOptions{
     cursor: pointer;
     padding: 5px 5px;
@@ -52,11 +51,6 @@
 }
 
 #assignmentHeader{
-    position: fixed;
-    text-align: center;
-    font-size: 18px;
-    margin-left: 35%;
-    width: 40%;
     font-family: 'Montserrat', sans-serif; 
     font-weight: 700;
     border-bottom: 1px solid lightgray;
@@ -73,13 +67,9 @@
 
 /*styling right side of page, procedures*/
 #assignmentViewCanvas {
-    
-    background: #001f3f;
-    border: 1px solid whitesmoke;
-    width: 75%;
-    height: 60%;
-    margin-top: 8%;
-    overflow: scroll;
+    background: white;
+    width: 100%;
+    overflow: auto;
 }
 
 #procedureHeader {
@@ -140,10 +130,12 @@
 
 .nameText{
     font-weight: bold;
+    color: black
 }
 
 .text{
     margin-left: 20px;
+    color: black;
 }
 
 #textWindow{
