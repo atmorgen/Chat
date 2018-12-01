@@ -1,0 +1,18 @@
+#loginInfo{
+    margin-left: 20px;
+    padding: 10px 10px;
+}
+
+#newUserScreen{
+    display: none;
+    position: fixed;
+    background-color: whitesmoke;
+    width: 20%;
+    margin-left: 40%;
+    padding: 5% 5%;
+    border: 2px solid black
+}
+
+#loginExists{
+    margin-left: 30px;
+}

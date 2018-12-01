@@ -159,5 +159,12 @@ export class ChatWindowComponent implements AfterViewInit {
       }
     }, 1500);
   }
+
+  /* LOGOUT */
+
+  logOut(){
+    localStorage.clear();
+    location.reload();
+  }
   
 }
