@@ -1,0 +1,6 @@
+<div id="filterHeader"><button (click)='logOut()'>Logout</button><p>Users</p></div>
+    <div id="filterCanvas">
+      <li>
+        <ul *ngFor="let json of usersNgFor" class='filterOptions'>{{json.user}}</ul>
+      </li>
+    </div>

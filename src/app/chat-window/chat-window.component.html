@@ -1,13 +1,8 @@
 <div id="Assignments" class="tabcontent">
   <div class="containerDiv">
-    <div id="filterHeader"><button (click)='logOut()'>Logout</button><p>Users</p></div>
-    <div id="filterCanvas">
-      <li>
-        <ul class='filterOptions'>User 1</ul>
-      </li>
-    </div>
-  
-    <div id="assignmentHeader"><p>Chat</p><input id='userName' type='text'></div>
+    <app-users-window></app-users-window>
+        
+    <div id="assignmentHeader"><p>Chat</p></div>
     <div id="assignmentViewCanvas">
       <div class='buttonForloop' *ngFor="let json of assignmentsNgFor">
         <button class="assignView">

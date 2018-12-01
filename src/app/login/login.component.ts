@@ -16,10 +16,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.checkforStorage()
-    console.log(window.localStorage)
   }
-
-  
 
   openNewUserScreen(){
     document.getElementById('newUserScreen').style.display = 'inline-block'
@@ -67,10 +64,8 @@ export class LoginComponent implements OnInit {
 
     for(var i = 0;i<userDB.length;i++){
       if(userDB[i].user == compareInput.user){
-        if(userDB[i].password == compareInput.password){
           isUnique = false;
           break;
-        }
       }
     }
     return isUnique
@@ -104,7 +99,7 @@ export class LoginComponent implements OnInit {
         if(isUnique){
           document.getElementById('loginExists').innerHTML = 'This ain\'t no login'
         }else{
-          this.switchToChat()
+          this.switchToChat(userName)
           localStorage.setItem('userInfo',JSON.stringify(userJSON))
         }
       })
@@ -126,18 +121,42 @@ export class LoginComponent implements OnInit {
         if(local.userInfo != undefined){
           let isUnique = this.checkforUnique(JSON.parse(local.userInfo),returnArr)
           if(!isUnique){
-            this.switchToChat()
+            this.switchToChat(JSON.parse(local.userInfo).user)
           }
         }
       })
   }
 
-  switchToChat(){
+  switchToChat(userName){
     document.getElementById('loginPage').style.display = 'none'
     document.getElementById('Assignments').style.display = 'block'
+
+    this.compareToUsers(userName)
   }
 
-  
-  
+  compareToUsers(userName){
 
+    let alreadyOnline: boolean = false;
+
+    var dbUpdate = this.db.database.ref('onlineUsers/users').once('value',
+      snapshot =>{
+        var returnArr = [];
+        snapshot.forEach(childSnapshot=> {
+          var item = childSnapshot.val();
+          
+          returnArr.push(item);
+        });
+
+        for(var i = 0;i<returnArr.length;i++){
+          if(returnArr[i].user == userName){
+            alreadyOnline = true;
+            break;
+          }
+        }
+        if(!alreadyOnline){
+          let input = JSON.parse(`{"user":"${userName}"}`)
+          this.postData('onlineUsers/users',input)
+        }
+      })
+  }
 }
