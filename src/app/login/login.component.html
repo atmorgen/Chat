@@ -1,0 +1,17 @@
+<div id='loginPage'>
+    <div id='loginInfo'>
+        <div>UserName: <input type='text' id ='userName'></div>
+        <div>PassWord: <input type='text' id='passWord'></div>
+        <button id='loginButton' (click)='login()'>Login</button>
+        <button id='newUser' (click)='openNewUserScreen()'>Create New Account</button>
+    </div>
+    <div id='loginExists'></div>
+
+    <div id='newUserScreen'>
+        <div id="closeBtnDiv"><a (click)='closeNewUser()' class="closebtn">&times;</a></div>
+        <div>UserName: <input type='text' id ='newUserName'></div>
+        <div>PassWord: <input type='text' id='newPassword'></div>
+        <button (click)='createNewUser()' id='loginButton'>Create User</button>
+        <div id='userExists'></div>
+    </div>
+</div>

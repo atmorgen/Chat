@@ -1,6 +1,5 @@
 import { Component, AfterViewInit, HostListener, ViewChildren } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database'
-import { Window } from 'selenium-webdriver';
 
 @Component({
   selector: 'app-chat-window',
@@ -11,10 +10,14 @@ export class ChatWindowComponent implements AfterViewInit {
 
   assignmentsNgFor:any;
   target: HTMLElement;
+  userName;
 
   constructor(private db: AngularFireDatabase) { 
       //determines the rate at which the DOM is checked for the ngFor updates from the database
       setInterval(() => {
+        if(localStorage.userInfo != undefined){
+          this.userName = JSON.parse(localStorage.userInfo).user
+        }
       })
     }
 
@@ -81,11 +84,10 @@ export class ChatWindowComponent implements AfterViewInit {
   }
 
   jsonClean(input: string){
-    let userName = (<HTMLInputElement>document.getElementById('userName')).value
     
     let output = JSON.parse(`
       {
-        "user":"${userName}",
+        "user":"${this.userName}",
         "text":"${input.trim()}"
       }
     `);
@@ -100,12 +102,10 @@ export class ChatWindowComponent implements AfterViewInit {
 
     this.db.database.ref("chat/key").remove();
 
-    let userName = (<HTMLInputElement>document.getElementById('userName')).value
-
     let output = JSON.parse(`{
       "session":[
         {
-          "user":"${userName}",
+          "user":"${this.userName}",
           "text":"Database was Wiped"
         }
       ]
@@ -159,5 +159,7 @@ export class ChatWindowComponent implements AfterViewInit {
       }
     }, 1500);
   }
+
+  
   
 }
