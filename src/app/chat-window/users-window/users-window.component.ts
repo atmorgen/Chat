@@ -52,10 +52,9 @@ export class UsersWindowComponent implements OnInit {
             break;
           }
         }
+        localStorage.clear();
+        location.reload();
     }) 
-
-    localStorage.clear();
-    location.reload();
   }
 
   logOutBrowserClose(){
