@@ -17,9 +17,10 @@ export class IgnoreThisComponent implements OnInit {
   constructor(private db: AngularFireDatabase) { }
 
   count = 0;
+  duplicatesArray = new Array();
 
   ngOnInit() {
-    this.getAPISummary('Toothpaste')
+    this.getAPISummary('League_of_Legends')
   }
 
   getAPISummary(search){
@@ -40,17 +41,31 @@ export class IgnoreThisComponent implements OnInit {
 
       var holder = el.getElementsByTagName('p')
       for(var i = 0;i<holder.length;i++){
-        var data2 = holder[i].innerHTML.split('mw:WikiLink" href="./')[1]
-        
-        if(data2 != undefined){
-          var output = data2.split('"')
-          firstLink = output[0]
-          
-          if(firstLink == 'Philosophy'){
-            console.log('done with a count of: ' + this.count)
-          }else{
-            console.log(firstLink)
-            this.getAPISummary(firstLink)
+        var data2 = holder[i].innerHTML.split('mw:WikiLink" href="./')
+        for(var j = 1;j<data2.length;j++){
+          if(data2[j] != undefined){
+            var output = data2[j].split('"')
+            firstLink = output[0]
+
+            if(!this.duplicatesArray.includes(firstLink)){
+              if(firstLink == 'Existence' || this.count > 100){
+                console.log('Existence Wins(count of: ' + this.count + ')')
+                return;
+              }else if(firstLink == 'Philosophy' || this.count > 100){
+                console.log('Philosophy Wins(count of: ' + this.count + ')')
+                return;
+              }else if(firstLink.indexOf("differences") == -1 && firstLink.indexOf('Help') == -1 && firstLink.indexOf('language') == -1){
+                this.count++
+                console.log(firstLink)
+                console.log(this.count)
+                this.duplicatesArray.push(firstLink)
+                this.getAPISummary(firstLink)
+                return
+              }
+            }else{
+              console.log('Infinite Loop of: ' + this.duplicatesArray[this.duplicatesArray.length - 1] + ' back to: ' + firstLink + ' (position: ' + (this.duplicatesArray.indexOf(firstLink)+1) + ')')
+              return
+            }
           }
         }
       }
