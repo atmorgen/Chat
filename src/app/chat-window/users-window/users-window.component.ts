@@ -33,7 +33,7 @@ export class UsersWindowComponent implements OnInit {
 
   /* LOGOUT */
 
-  logOut(){
+  /*logOut(){
 
     let local = JSON.parse(localStorage.userInfo)
 
@@ -55,7 +55,7 @@ export class UsersWindowComponent implements OnInit {
         localStorage.clear();
         location.reload();
     }) 
-  }
+  }*/
 
   logOutBrowserClose(){
 

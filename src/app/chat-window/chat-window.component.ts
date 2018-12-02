@@ -37,6 +37,30 @@ export class ChatWindowComponent implements AfterViewInit {
         if(input.trim() == '/wipe') this.wipe()
       }
     }
+  
+    logOut(){
+
+      let local = JSON.parse(localStorage.userInfo)
+  
+      var dbUpdate = this.db.database.ref('onlineUsers').once('value',
+        snapshot =>{
+          var returnArr = [];
+          snapshot.forEach(childSnapshot=> {
+            var item = childSnapshot.val();
+            
+            returnArr.push(item);
+          });
+  
+          for(var key in returnArr[0]){
+            if(returnArr[0][key].user == local.user){
+              this.db.database.ref('onlineUsers/users/' + key).remove()
+              break;
+            }
+          }
+          localStorage.clear();
+          location.reload();
+      }) 
+    }
 
   getData(){
     //find 'assignments reference in database and subscribe to it
