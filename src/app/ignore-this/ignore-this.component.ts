@@ -7,8 +7,8 @@ import { AngularFireDatabase } from 'angularfire2/database'
   styleUrls: ['./ignore-this.component.css']
 })
 export class IgnoreThisComponent implements OnInit {
-
   
+  apiSummary = 'https://en.wikipedia.org/api/rest_v1/page/summary/'
   apiMedia = 'https://en.wikipedia.org/api/rest_v1/page/media/'
   apiMetadata = 'https://en.wikipedia.org/api/rest_v1/page/metadata/'
   apiRef = 'https://en.wikipedia.org/api/rest_v1/page/references/'
@@ -16,20 +16,44 @@ export class IgnoreThisComponent implements OnInit {
 
   constructor(private db: AngularFireDatabase) { }
 
+  count = 0;
+
   ngOnInit() {
-    this.getAPISummary('Infant')
+    this.getAPISummary('Toothpaste')
   }
 
   getAPISummary(search){
     let request = new XMLHttpRequest();
-    let apiSummary = 'https://en.wikipedia.org/api/rest_v1/page/summary/'
 
-    request.open('GET', apiSummary + search, true);
-    request.onload = function(){
-      var data = JSON.parse(this.response)
-      return data.extract
-      //console.log(this.response)
-      //console.log(extractContent(this.response))
+    request.open('GET', this.apiTalk + search, true);
+    request.onload = x => {
+
+      let firstLink = '';
+
+      var el = document.createElement('html')
+      el.innerHTML = request.response
+
+      var tables = el.getElementsByTagName('table')
+      for(var i = 0;i<tables.length;i++){
+        tables[i].parentNode.removeChild(tables[i])
+      }
+
+      var holder = el.getElementsByTagName('p')
+      for(var i = 0;i<holder.length;i++){
+        var data2 = holder[i].innerHTML.split('mw:WikiLink" href="./')[1]
+        
+        if(data2 != undefined){
+          var output = data2.split('"')
+          firstLink = output[0]
+          
+          if(firstLink == 'Philosophy'){
+            console.log('done with a count of: ' + this.count)
+          }else{
+            console.log(firstLink)
+            this.getAPISummary(firstLink)
+          }
+        }
+      }
 
       function extractContent(s) {
         var span= document.createElement('span');
