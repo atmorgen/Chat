@@ -1,5 +1,6 @@
 import { Component, AfterViewInit, HostListener, ViewChildren } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database'
+import { IgnoreThisComponent } from '../ignore-this/ignore-this.component'
 
 @Component({
   selector: 'app-chat-window',
@@ -11,6 +12,8 @@ export class ChatWindowComponent implements AfterViewInit {
   assignmentsNgFor:any;
   target: HTMLElement;
   userName;
+
+  wiki:IgnoreThisComponent = new IgnoreThisComponent(this.db)
 
   constructor(private db: AngularFireDatabase) { 
       //determines the rate at which the DOM is checked for the ngFor updates from the database
@@ -34,7 +37,12 @@ export class ChatWindowComponent implements AfterViewInit {
         let input = (<HTMLInputElement>document.getElementById('textWindow')).value.toString();
         (<HTMLTextAreaElement>document.getElementById('textWindow')).value = '';
         this.jsonClean(input)
-        if(input.trim() == '/wipe') this.wipe()
+        if(input.trim() == '/wipe') {
+          this.wipe()
+        }
+        if(input.split(' ')[0] == '/wiki' && input.split(' ').length == 2) {
+          this.wikipediaCall(input.split(' ')[1])
+        }
       }
     }
   
@@ -184,6 +192,53 @@ export class ChatWindowComponent implements AfterViewInit {
     }, 1500);
   }
 
+
+  /* FOR WIKI */
+
+  wikipediaCall(search){
+    let request = new XMLHttpRequest();
+    let apiSummary = 'https://en.wikipedia.org/api/rest_v1/page/summary/'
+
+    request.open('GET', apiSummary + search, true);
+    request.onload = x => {
+      var response = JSON.parse(request.response).extract
+      if(response != undefined){
+        response = response.replace(/\n/g, " ")
+        let output = response.replace(/"/g, '\\\"');
+        this.wikiClean(output,'WikiBot')
+      }else{
+        this.wikiClean('This is not a thing, Sorry :(','WikiBot')
+      }
+      function extractContent(s) {
+        var span= document.createElement('span');
+        span.innerHTML= s;
+          var children= span.querySelectorAll('*');
+          for(var i = 0 ; i < children.length ; i++) {
+            if(children[i].textContent)
+              children[i].textContent+= ' ';
+            else
+              (<HTMLElement>children[i]).innerText+= ' ';
+          }
+        
+        return [span.textContent || span.innerText].toString().replace(/ +/g,' ');
+      };
+    }
+    // Send request
+    request.send();
+  } 
   
-  
+  wikiClean(input: string,name){
+    
+    let output = JSON.parse(`
+      {
+        "user":"${name}",
+        "text":"${input.trim()}"
+      }
+    `);
+
+    let key = document.getElementById('refKey').getAttribute('key');
+    let location = 'chat/sessions/' + key + '/session' ;
+    
+    this.postData(location,output);
+  }
 }

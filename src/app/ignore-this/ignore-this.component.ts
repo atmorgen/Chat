@@ -8,7 +8,7 @@ import { AngularFireDatabase } from 'angularfire2/database'
 })
 export class IgnoreThisComponent implements OnInit {
 
-  apiSummary = 'https://en.wikipedia.org/api/rest_v1/page/summary/'
+  
   apiMedia = 'https://en.wikipedia.org/api/rest_v1/page/media/'
   apiMetadata = 'https://en.wikipedia.org/api/rest_v1/page/metadata/'
   apiRef = 'https://en.wikipedia.org/api/rest_v1/page/references/'
@@ -17,18 +17,17 @@ export class IgnoreThisComponent implements OnInit {
   constructor(private db: AngularFireDatabase) { }
 
   ngOnInit() {
-    this.getAPI()
+    this.getAPISummary('Infant')
   }
 
-  getAPI(){
+  getAPISummary(search){
     let request = new XMLHttpRequest();
+    let apiSummary = 'https://en.wikipedia.org/api/rest_v1/page/summary/'
 
-    request.addEventListener('progress',x=> console.log('in Progress'))
-
-    request.open('GET', this.apiMedia + 'Infant', true);
+    request.open('GET', apiSummary + search, true);
     request.onload = function(){
-      //var data = JSON.parse(this.response)
-      //console.log(data)
+      var data = JSON.parse(this.response)
+      return data.extract
       //console.log(this.response)
       //console.log(extractContent(this.response))
 
