@@ -1,6 +1,5 @@
 import { Component, AfterViewInit, HostListener, ViewChildren } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database'
-import { Window } from 'selenium-webdriver';
 
 @Component({
   selector: 'app-chat-window',
@@ -11,10 +10,14 @@ export class ChatWindowComponent implements AfterViewInit {
 
   assignmentsNgFor:any;
   target: HTMLElement;
+  userName;
 
   constructor(private db: AngularFireDatabase) { 
       //determines the rate at which the DOM is checked for the ngFor updates from the database
       setInterval(() => {
+        if(localStorage.userInfo != undefined){
+          this.userName = JSON.parse(localStorage.userInfo).user
+        }
       })
     }
 
@@ -33,6 +36,30 @@ export class ChatWindowComponent implements AfterViewInit {
         this.jsonClean(input)
         if(input.trim() == '/wipe') this.wipe()
       }
+    }
+  
+    logOut(){
+
+      let local = JSON.parse(localStorage.userInfo)
+  
+      var dbUpdate = this.db.database.ref('onlineUsers').once('value',
+        snapshot =>{
+          var returnArr = [];
+          snapshot.forEach(childSnapshot=> {
+            var item = childSnapshot.val();
+            
+            returnArr.push(item);
+          });
+  
+          for(var key in returnArr[0]){
+            if(returnArr[0][key].user == local.user){
+              this.db.database.ref('onlineUsers/users/' + key).remove()
+              break;
+            }
+          }
+          localStorage.clear();
+          location.reload();
+      }) 
     }
 
   getData(){
@@ -81,11 +108,10 @@ export class ChatWindowComponent implements AfterViewInit {
   }
 
   jsonClean(input: string){
-    let userName = (<HTMLInputElement>document.getElementById('userName')).value
     
     let output = JSON.parse(`
       {
-        "user":"${userName}",
+        "user":"${this.userName}",
         "text":"${input.trim()}"
       }
     `);
@@ -100,12 +126,10 @@ export class ChatWindowComponent implements AfterViewInit {
 
     this.db.database.ref("chat/key").remove();
 
-    let userName = (<HTMLInputElement>document.getElementById('userName')).value
-
     let output = JSON.parse(`{
       "session":[
         {
-          "user":"${userName}",
+          "user":"${this.userName}",
           "text":"Database was Wiped"
         }
       ]
@@ -159,5 +183,7 @@ export class ChatWindowComponent implements AfterViewInit {
       }
     }, 1500);
   }
+
+  
   
 }

@@ -7,3 +7,18 @@ body{
 *:focus {
     outline: none;
 }
+
+/*close button*/
+.closebtn {
+	color: black;
+    cursor: pointer;
+	position: absolute;
+	z-index: 2;
+	top: .5%;
+    left: 96%;
+    font-size: 25px;
+}
+
+.closebtn:hover {
+	color: black;
+}

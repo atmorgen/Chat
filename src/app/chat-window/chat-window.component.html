@@ -1,20 +1,20 @@
 <div id="Assignments" class="tabcontent">
   <div class="containerDiv">
+
     <div id="headerBar">
-        <div id="filterHeader"><p>Users</p></div>
-        <div id="assignmentHeader"><p>Chat</p><input id='userName' type='text'></div>
+      <div id="filterHeader"><p>Users</p></div>
+        <div id="assignmentHeader">
+          <div></div>
+          <p>Chat</p>
+          <button (click)='logOut()'>Logout</button>
+        </div>
     </div>
 
+
     <div id="mainDiv">
-    <div id="leftSide">
-      <div id="filterCanvas">
-        <li>
-          <ul class='filterOptions'><p>User 1</p></ul>
-        </li>
-      </div>
-      <div id="footerLeft"></div>
-    </div>
-  
+
+    <app-users-window style="width: 20%;"></app-users-window>
+    
     <div id="rightSide">
       <div id="assignmentViewCanvas">
         <div class='buttonForloop' *ngFor="let json of assignmentsNgFor">
@@ -29,7 +29,7 @@
       <textarea id="textWindow" type="text"></textarea>
       <div id='refKey'></div>
     </div>
-  </div>
+    </div>
   </div>
 </div>
   
