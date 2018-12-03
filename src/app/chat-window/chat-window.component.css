@@ -213,7 +213,6 @@ ul {
 textarea{
     height: 80px; 
     width: 90%;
-    bottom: calc(100vh - 90px);
     resize: none;
     border-radius: 10px;
     padding: 10px;
