@@ -9,7 +9,7 @@
   <!--PMs View-->
   <div class='userWindows' id="pmCanvas">
     <li>
-      <ul (click)='expandUser($event)' *ngFor="let json of pmNgFor" class='filterOptions'><p class='filterUsers'>PMs</p></ul>
+      <ul (click)='expandUser($event)' *ngFor="let json of pmNgFor" class='filterOptions'><p class='filterUsers'>{{json.user}}</p></ul>
     </li>
   </div>
   <div id="footerLeft"></div>

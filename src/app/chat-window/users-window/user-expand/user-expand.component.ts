@@ -14,13 +14,6 @@ export class UserExpandComponent implements OnInit {
   constructor(private elRef: ElementRef,private db: AngularFireDatabase) { }
 
   ngOnInit() {
-    this.findUserTarget()
-  }
-
-  findUserTarget(){
-    let userName = this.elRef.nativeElement.parentElement.firstChild.nodeValue
-
-    //this.elRef.nativeElement.firstChild.innerText = userName + ' is selected!'
   }
 
   /* Checks to make sure privateMessage doesn't already exist.  If it doesn't then create a private
@@ -31,19 +24,28 @@ export class UserExpandComponent implements OnInit {
     //get the target
     let targetUser = this.elRef.nativeElement.parentElement.firstChild.nodeValue    
     
-    //async function that returns whether or not
-    let isPresent = await this.checkForPM(self,targetUser);
-    
-    if(!isPresent){
-      var pmKey = this.db.database.ref('privateMessages/sessions').push(this.InitPMJSON(self.user,targetUser))
-      this.addPM(self,targetUser,pmKey.key)
-    }else{
+    //if you're not trying to start a pm with yourself
+    if(self.user != targetUser){
+      //async function that returns whether or not a pm has already been made between the two parties
+      let isPresent = await this.checkForPM(self,targetUser);
       
+      //if not pm has been made
+      if(!isPresent){
+        //create instance of the pm
+        var pmKey = this.db.database.ref('privateMessages/sessions').push(this.InitPMJSON(self.user,targetUser))
+        //push the pm info to both parties
+        this.addPM(self,targetUser,pmKey.key)
+      }else{
+        
+      }
     }
   }
 
+  //async function that returns whether or not a pm has already been made between the two parties
   checkForPM(self,targetUser){
+    //if pm already exists
     let isPresent = false;
+    //db
     let dbCall = this.db;
 
     return new Promise(function(resolve,reject) {
@@ -56,10 +58,13 @@ export class UserExpandComponent implements OnInit {
             returnArr.push(item);
           });
           
+          //finds the correct user out of logins
           for(var i = 0;i<returnArr.length;i++){
             if(returnArr[i].user == self.user){
+              //for each of private message of the user
               for(var key in returnArr[i].privateMessages){
                 let userTargets = returnArr[i].privateMessages[key].users
+                //for each other user within the private message
                 for(var k = 0;k<userTargets.length;k++){
                   if(userTargets[k].userTarget == targetUser){
                     isPresent = true;
@@ -74,7 +79,8 @@ export class UserExpandComponent implements OnInit {
       })
   }
 
-  /* Adds a new PM to the privateMessages DB and also the pmKey to 'self' personal DB */
+  /* Adds a new PM to the privateMessages DB and also the pmKey to 'self' personal DB and to 
+  'target personal DB */
   addPM(self,target,pmKey){
 
     var dbUpdate = this.db.database.ref('logins/users').once('value',
@@ -86,10 +92,19 @@ export class UserExpandComponent implements OnInit {
           returnArr.push(item);
         });
         
+        //adds the pm information to 'self' personal db
         for(var i = 0;i<returnArr.length;i++){
           if(returnArr[i].user == self.user){
-            let key = Object.keys(snapshot.val())[0]
+            let key = Object.keys(snapshot.val())[i]
             this.db.database.ref('logins/users/' + key + '/privateMessages').push(this.addPMtoUserJSON(target,pmKey))
+          }
+        }
+
+        //adds the pm information to 'target' personal db
+        for(var i = 0;i<returnArr.length;i++){
+          if(returnArr[i].user == target){
+            let key = Object.keys(snapshot.val())[i]
+            this.db.database.ref('logins/users/' + key + '/privateMessages').push(this.addPMtoUserJSON(self.user,pmKey))
           }
         }
       })

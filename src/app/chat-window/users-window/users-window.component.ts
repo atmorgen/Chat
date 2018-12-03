@@ -17,11 +17,12 @@ export class UsersWindowComponent implements OnInit {
     private appRef: ApplicationRef, private injector: Injector) { }
 
   ngOnInit() {
-    this.getData()
+    this.getOnlineData()
+    this.PMProcess()
     this.logOutBrowserClose()
   }
 
-  getData(){
+  getOnlineData(){
     //find 'assignments reference in database and subscribe to it
     var dbUpdate = this.db.database.ref('onlineUsers/users').on('value',
       snapshot =>{
@@ -33,6 +34,64 @@ export class UsersWindowComponent implements OnInit {
         });
         this.usersNgFor = returnArr
     }) 
+  }
+
+  async PMProcess(){
+    var userKey = await this.getUserKey()
+    var pmKeys = await this.getPMKeys(userKey)
+    
+    /* TO DO: Use this collection of PM keys to process the data for the UI */
+    console.log(pmKeys)
+  }
+
+  getUserKey(){
+    //get this user
+    let self = JSON.parse(localStorage.getItem('userInfo'));
+    let userKey = ''
+    let db = this.db;
+
+    return new Promise(function(resolve,reject) {
+      var dbUpdate = db.database.ref('logins/users').once('value',
+        snapshot =>{
+          var returnArr = [];
+          snapshot.forEach(childSnapshot=> {
+            
+            var item = childSnapshot.val();
+            returnArr.push(item);
+          });
+          
+          //adds the pm information to 'self' personal db
+          for(var i = 0;i<returnArr.length;i++){
+            if(returnArr[i].user == self.user){
+              userKey = Object.keys(snapshot.val())[i]
+              break;
+            }
+          }
+          resolve(userKey)
+        })
+      })
+  }
+
+  getPMKeys(userKey){
+    let pmKeys = [];
+    let db = this.db;
+
+    return new Promise(function(resolve,reject) {
+      db.database.ref('logins/users/' + userKey + '/privateMessages').once('value',
+        snapshot =>{
+          var returnArr = [];
+          snapshot.forEach(childSnapshot=> {
+            
+            var item = childSnapshot.val();
+            returnArr.push(item);
+          });
+
+          for(var i = 0;i<returnArr.length;i++){
+            pmKeys.push(returnArr[i].pmKey)
+          }
+          resolve(pmKeys)
+        })
+      })
   }
 
   logOutBrowserClose(){
