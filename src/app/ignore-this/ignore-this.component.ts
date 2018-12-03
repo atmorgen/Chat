@@ -18,9 +18,9 @@ export class IgnoreThisComponent implements OnInit {
 
   count = 0;
   duplicatesArray = new Array();
+  post = '';
 
   ngOnInit() {
-    this.getAPISummary('League_of_Legends')
   }
 
   getAPISummary(search){
@@ -49,27 +49,27 @@ export class IgnoreThisComponent implements OnInit {
 
             if(!this.duplicatesArray.includes(firstLink)){
               if(firstLink == 'Existence' || this.count > 100){
-                console.log('Existence Wins(count of: ' + this.count + ')')
+                this.post += 'Existence Wins(count of: ' + this.count + ')' 
+                console.log(this.post)
                 return;
               }else if(firstLink == 'Philosophy' || this.count > 100){
-                console.log('Philosophy Wins(count of: ' + this.count + ')')
+                this.post += 'Philosophy Wins(count of: ' + this.count + ')'
+                console.log(this.post)
                 return;
               }else if(firstLink.indexOf("differences") == -1 && firstLink.indexOf('Help') == -1 && firstLink.indexOf('language') == -1){
                 this.count++
-                console.log(firstLink)
-                console.log(this.count)
+                this.post += 'Count: ' + this.count + '    Page: ' + firstLink + '\n'
                 this.duplicatesArray.push(firstLink)
                 this.getAPISummary(firstLink)
                 return
               }
             }else{
-              console.log('Infinite Loop of: ' + this.duplicatesArray[this.duplicatesArray.length - 1] + ' back to: ' + firstLink + ' (position: ' + (this.duplicatesArray.indexOf(firstLink)+1) + ')')
+              this.post += 'Infinite Loop of: ' + this.duplicatesArray[this.duplicatesArray.length - 1] + ' back to: ' + firstLink + ' (position: ' + (this.duplicatesArray.indexOf(firstLink)+1) + ')\n'
               return
             }
           }
         }
       }
-
       function extractContent(s) {
         var span= document.createElement('span');
         span.innerHTML= s;

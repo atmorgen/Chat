@@ -37,11 +37,20 @@ export class ChatWindowComponent implements AfterViewInit {
         let input = (<HTMLInputElement>document.getElementById('textWindow')).value.toString();
         (<HTMLTextAreaElement>document.getElementById('textWindow')).value = '';
         this.jsonClean(input)
-        if(input.trim() == '/wipe') {
+
+        var callChecks = input.split(' ')
+
+
+        if(callChecks[0].trim() == '/wipe') {
           this.wipe()
         }
-        if(input.split(' ')[0] == '/wiki' && input.split(' ').length == 2) {
-          this.wikipediaCall(input.split(' ')[1])
+
+        /* Wiki Calls */
+        if(callChecks[0] == '/wiki' && callChecks[1].toLowerCase() == 'follow'){
+          this.resetWikiTrails();
+          this.wikiTrailFollow(callChecks[2])
+        }else if(callChecks[0] == '/wiki') {
+          this.wikipediaCall(callChecks[1])
         }
       }
     }
@@ -108,8 +117,9 @@ export class ChatWindowComponent implements AfterViewInit {
     if(returnArr.length == 2){
       let jsonHolder = returnArr[1][key]['session'];
       this.assignmentsNgFor = JSON.parse('[]')
-
+      
       for(key in jsonHolder){
+        jsonHolder[key].text.replace(/\\n/g, '\n')
         this.assignmentsNgFor.push(jsonHolder[key])
       }
     }
@@ -226,6 +236,92 @@ export class ChatWindowComponent implements AfterViewInit {
     // Send request
     request.send();
   } 
+
+  /* this is the method to run the wiki trail */
+  count = 0;
+  duplicatesArray = new Array();
+  post = '';
+
+  resetWikiTrails(){
+    this.post = '';
+    this.duplicatesArray = new Array();
+    this.count = 0;
+  }
+  
+  wikiTrailFollow(search){
+    
+    let request = new XMLHttpRequest();
+    
+    request.open('GET', 'https://en.wikipedia.org/api/rest_v1/page/html/' + search, true);
+    request.onload = x => {
+      let firstLink = '';
+
+      var el = document.createElement('html')
+      el.innerHTML = request.response
+
+      var tables = el.getElementsByTagName('table')
+      for(var i = 0;i<tables.length;i++){
+        tables[i].parentNode.removeChild(tables[i])
+      }
+
+      var holder = el.getElementsByTagName('p')
+      for(var i = 0;i<holder.length;i++){
+        var data2 = holder[i].innerHTML.split('mw:WikiLink" href="./')
+          for(var j = 1;j<data2.length;j++){
+            if(data2[j] != undefined){
+              var output = data2[j].split('"')
+              firstLink = output[0]
+
+              if(!this.duplicatesArray.includes(firstLink)){
+                if(firstLink == 'Existence' || this.count > 100){
+                  this.post += 'Existence Wins(count of: ' + this.count + ')' 
+                  this.wikiClean(this.post,'WikiBot')
+                  return;
+                }else if(firstLink == 'Philosophy' || this.count > 100){
+                  this.post += 'Philosophy Wins(count of: ' + this.count + ')'
+                  this.wikiClean(this.post,'WikiBot')
+                  return;
+                }else if(firstLink.indexOf("differences") == -1 && firstLink.indexOf('Help') == -1 && firstLink.indexOf('language') == -1){
+                  this.count++
+                  console.log(this.count)
+                  let space = '   ';
+                  if(this.count <= 9){
+                    space += '  '
+                  }
+                  this.post += 'Count: ' + this.count + space + ' Page: ' + firstLink + '\\n'
+                  this.duplicatesArray.push(firstLink)
+                  this.wikiTrailFollow(firstLink)
+                  return
+                }
+              }else{
+                this.post += 'Infinite Loop of: ' + this.duplicatesArray[this.duplicatesArray.length - 1] + ' back to: ' + firstLink + ' (position: ' + (this.duplicatesArray.indexOf(firstLink)+1) + ')'
+                this.wikiClean(this.post,'WikiBot')
+                return
+              }
+          }
+        }
+      }
+      if(this.post == ''){
+        this.wikiClean('Please be more specific','WikiBot')
+      }
+      
+      function extractContent(s) {
+        var span= document.createElement('span');
+        span.innerHTML= s;
+          var children= span.querySelectorAll('*');
+          for(var i = 0 ; i < children.length ; i++) {
+            if(children[i].textContent)
+              children[i].textContent+= ' ';
+            else
+              (<HTMLElement>children[i]).innerText+= ' ';
+          }
+        
+        return [span.textContent || span.innerText].toString().replace(/ +/g,' ');
+      };
+    }
+    // Send request
+    request.send();
+  }
   
   wikiClean(input: string,name){
     

@@ -22,3 +22,7 @@ body{
 .closebtn:hover {
 	color: black;
 }
+
+ul{
+    white-space: pre-wrap;
+}
