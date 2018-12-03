@@ -1,6 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 body{
-    background-color:  rgb(136, 104, 104)
+    background-color:  white;
+    margin: 0px;
+}
+
+*:focus {
+    outline: none;
 }
 
 /*close button*/
@@ -16,4 +21,8 @@ body{
 
 .closebtn:hover {
 	color: black;
+}
+
+ul{
+    white-space: pre-wrap;
 }
