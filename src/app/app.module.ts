@@ -12,6 +12,8 @@ import { LoginComponent } from './login/login.component';
 import { GlobalJSONLibraryComponent } from './global-jsonlibrary/global-jsonlibrary.component';
 import { UsersWindowComponent } from './chat-window/users-window/users-window.component';
 import { IgnoreThisComponent } from './ignore-this/ignore-this.component';
+import { UserExpandComponent } from './chat-window/users-window/user-expand/user-expand.component';
+import { PrivateChatComponent } from './private-chat/private-chat.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import { IgnoreThisComponent } from './ignore-this/ignore-this.component';
     LoginComponent,
     GlobalJSONLibraryComponent,
     UsersWindowComponent,
-    IgnoreThisComponent
+    IgnoreThisComponent,
+    UserExpandComponent,
+    PrivateChatComponent
   ],
   imports: [
     BrowserModule,

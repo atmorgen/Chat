@@ -30,6 +30,16 @@ export class ChatWindowComponent implements AfterViewInit {
     this.newMessage();
     this.startFlash()
   }
+  
+  userPMSwitch(e){
+    let value = e.target.value
+
+    for(var i = 0;i<document.getElementsByClassName('userWindows').length;i++){
+      (<HTMLElement>document.getElementsByClassName('userWindows')[i]).style.display = 'none'
+    }
+
+    document.getElementById(value).style.display = 'flex'
+  }
 
   @HostListener('keyup',['$event'])
     onkeyup(e){
