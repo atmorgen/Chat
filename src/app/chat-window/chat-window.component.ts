@@ -139,6 +139,7 @@ export class ChatWindowComponent implements AfterViewInit {
 
   jsonClean(input: string){
     
+    input = input.replace(/"/g, '\\\"')
     let output = JSON.parse(`
       {
         "user":"${this.userName}",
