@@ -159,14 +159,6 @@ ul {
     text-align: center;
 }
 
-/*.buttonForloop:nth-child(odd)  {
-    text-align: left;
-}
-
-.buttonForloop:nth-child(even)  {
-    text-align: right;
-}*/
-
 .assignView:first-of-type {
     margin-top: 14px;
 }
