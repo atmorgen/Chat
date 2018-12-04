@@ -105,7 +105,9 @@ export class ChatWindowComponent implements AfterViewInit {
           document.getElementById('assignmentViewCanvas').scrollTop = document.getElementById('assignmentViewCanvas').scrollHeight;
         }, 200);
 
-        this.newMessageBoo = true;
+        if(!this.windowFocus){
+          this.newMessageBoo = true;
+        }
     }) 
   }
 
@@ -174,27 +176,25 @@ export class ChatWindowComponent implements AfterViewInit {
     return fbKey.key
   }
 
+  /* WINDOW FLASHING FOR NEW MESSAGES */
   windowFocus = true;
   newMessageBoo = false;
 
-  @HostListener('document:keydown',['$event'])
-    onkeydown(){
+  @HostListener('mousemove', ['$event'])
+    onMousemove() {
       this.newMessageBoo = false;
+      this.windowFocus = true;
+    }
+  
+  @HostListener('keydown', ['$event'])
+    onkeydown() {
+      this.newMessageBoo = false;
+      this.windowFocus = true;
     }
 
-  @HostListener('document:mousedown',['$event'])
-    onmousedown(){
-      this.newMessageBoo = false;
-    }
-
-  @HostListener('document:mousemove',['$event'])
-    onmousemove(){
-      this.newMessageBoo = false;
-    }
-
-  //subscribes to an event that runs when assignments have finished rendering
   newMessage(){
-    window.onfocus = x=> { this.newMessageBoo = false; };
+    window.onfocus = x=> { this.windowFocus = true;  console.log('focused') };
+    window.onblur = x=> { this.windowFocus = false; console.log('blurred') }
   }
 
   startFlash(){
