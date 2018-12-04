@@ -197,7 +197,6 @@ export class ChatWindowComponent implements AfterViewInit {
     window.onfocus = x=> { this.newMessageBoo = false; };
   }
 
-
   startFlash(){
 
     let flash = false;

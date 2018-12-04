@@ -19,7 +19,6 @@ export class UsersWindowComponent implements OnInit {
   ngOnInit() {
     this.getOnlineData()
     this.PMProcess()
-    this.logOutBrowserClose()
   }
 
   getOnlineData(){
@@ -94,33 +93,7 @@ export class UsersWindowComponent implements OnInit {
       })
   }
 
-  logOutBrowserClose(){
-
-    
-    window.addEventListener('beforeunload', x => {
-
-      let local = JSON.parse(localStorage.userInfo)
-      
-      var dbUpdate = this.db.database.ref('onlineUsers').once('value',
-        snapshot =>{
-          var returnArr = [];
-          snapshot.forEach(childSnapshot=> {
-            var item = childSnapshot.val();
-            
-            returnArr.push(item);
-          });
-          
-          /*
-          for(var key in returnArr[0]){
-            this.db.database.ref('test').push(returnArr[0][key].user)
-            if(returnArr[0][key].user == local.user){
-              this.db.database.ref('onlineUsers/users/' + key).remove()
-              break;
-            }
-          }*/
-      }) 
-    });
-  }
+  
 
   /* USER Expand */
 
