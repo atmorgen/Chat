@@ -183,6 +183,8 @@ ul {
     overflow: show;
     margin: 7px 14px;
     background: lightgrey;
+    max-width: 100%;
+    word-break: break-word
  }
 
  .assignView::-moz-focus-inner { 
@@ -208,6 +210,10 @@ ul {
     color: black;
     padding: 0px;
     margin-left: 25px;
+    max-width: 99%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
 }
 
 textarea{
