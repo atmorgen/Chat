@@ -176,7 +176,10 @@ ul {
     margin: 7px 14px;
     background: lightgrey;
     max-width: 100%;
-    word-break: break-word
+    word-break: break-word;
+
+    /* For FireFox */
+    word-break: break-all;
  }
 
  .assignView::-moz-focus-inner { 
