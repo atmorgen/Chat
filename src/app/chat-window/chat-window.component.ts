@@ -149,7 +149,32 @@ export class ChatWindowComponent implements AfterViewInit {
     let key = document.getElementById('refKey').getAttribute('key');
     let location = 'chat/sessions/' + key + '/session' ;
     
-    this.postData(location,output);
+    this.postChatData(location,output);
+  }
+
+  postChatData(ref,input){
+    var dbUpdate = this.db.database.ref(ref).once('value',
+        snapshot =>{
+          var returnArr = [];
+          var keys = [];
+          snapshot.forEach(childSnapshot=> {
+            var item = childSnapshot.val();
+            keys.push(childSnapshot.key)
+            returnArr.push(item);
+          });
+
+          //checking last message to see if the same user.  If it is then create a text bubble for all chat
+          if(returnArr[returnArr.length-1].user == this.userName){
+            var output = returnArr[returnArr.length-1].text + '\n' + input.text
+            var key = keys[returnArr.length-1]
+            var fbKey = this.db.database.ref(ref + '/' + key).update({'text':output})
+          }else{
+            var fbKey2 = this.db.database.ref(ref).push(input); 
+            return fbKey2.key
+          }
+        })
+
+    
   }
 
   wipe(){
@@ -171,6 +196,7 @@ export class ChatWindowComponent implements AfterViewInit {
 
   //This references the AngularFireBase db which is created in 
   postData(ref,input){
+
     var fbKey = this.db.database.ref(ref).push(input); 
     
     return fbKey.key
@@ -193,8 +219,8 @@ export class ChatWindowComponent implements AfterViewInit {
     }
 
   newMessage(){
-    window.onfocus = x=> { this.windowFocus = true;  console.log('focused') };
-    window.onblur = x=> { this.windowFocus = false; console.log('blurred') }
+    window.onfocus = x=> { this.windowFocus = true; };
+    window.onblur = x=> { this.windowFocus = false; }
   }
 
   startFlash(){
