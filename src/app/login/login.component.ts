@@ -182,10 +182,10 @@ export class LoginComponent implements OnInit {
     this.returnFromAFK();
     setInterval(() => {
       this.afkCount++
-      if(this.afkCount >= 5){
+      if(this.afkCount >= 10){
         this.setToAFK()
       }
-    }, 1000);  
+    }, 30000);  
   }
 
   setToAFK(){
