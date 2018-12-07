@@ -2,7 +2,10 @@
   <div class="containerDiv">
 
     <div id="headerBar">
-      <div id="filterHeader"><p>Users</p></div>
+      <div id="filterHeader"><select>
+        <option (click)="userPMSwitch($event)" value="usersCanvas">Users</option>
+        <option (click)="userPMSwitch($event)" value="pmCanvas">PMs</option></select>
+      </div>
         <div id="assignmentHeader">
           <div></div>
           <p>Chat</p>

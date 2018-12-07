@@ -12,7 +12,8 @@ import { LoginComponent } from './login/login.component';
 import { GlobalJSONLibraryComponent } from './global-jsonlibrary/global-jsonlibrary.component';
 import { UsersWindowComponent } from './chat-window/users-window/users-window.component';
 import { IgnoreThisComponent } from './ignore-this/ignore-this.component';
-import { HttpClientModule } from '@angular/common/http';
+import { UserExpandComponent } from './chat-window/users-window/user-expand/user-expand.component';
+import { PrivateChatComponent } from './private-chat/private-chat.component';
 
 @NgModule({
   declarations: [
@@ -21,13 +22,14 @@ import { HttpClientModule } from '@angular/common/http';
     LoginComponent,
     GlobalJSONLibraryComponent,
     UsersWindowComponent,
-    IgnoreThisComponent
+    IgnoreThisComponent,
+    UserExpandComponent,
+    PrivateChatComponent
   ],
   imports: [
     BrowserModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
-    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

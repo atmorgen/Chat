@@ -25,4 +25,8 @@ body{
 
 ul{
     white-space: pre-wrap;
+} 
+
+li{
+    list-style-type: none;
 }

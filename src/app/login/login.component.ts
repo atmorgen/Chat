@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
           
           returnArr.push(item);
         });
-        let isUnique = this.checkforUnique(userJSON,returnArr)
+        let isUnique = this.glc.checkforUnique(userJSON,returnArr)
         
         if(isUnique){
           this.postData('logins/users',userJSON)
@@ -54,22 +54,7 @@ export class LoginComponent implements OnInit {
           document.getElementById('userExists').innerHTML = 'User already Exists...'
         }
     }) 
-  }
-
-  checkforUnique(input,returnArr){
-
-    let compareInput = input
-    let userDB = returnArr
-    let isUnique: boolean = true;
-
-    for(var i = 0;i<userDB.length;i++){
-      if(userDB[i].user == compareInput.user){
-          isUnique = false;
-          break;
-      }
-    }
-    return isUnique
-  }
+  }  
 
   //This references the AngularFireBase db which is created in 
   postData(ref,input){
@@ -94,7 +79,7 @@ export class LoginComponent implements OnInit {
           
           returnArr.push(item);
         });
-        let isUnique = this.checkforUnique(userJSON,returnArr)
+        let isUnique = this.glc.checkforUniquewithPass(userJSON,returnArr)
         
         if(isUnique){
           document.getElementById('loginExists').innerHTML = 'This ain\'t no login'
@@ -119,7 +104,7 @@ export class LoginComponent implements OnInit {
           returnArr.push(item);
         });
         if(local.userInfo != undefined){
-          let isUnique = this.checkforUnique(JSON.parse(local.userInfo),returnArr)
+          let isUnique = this.glc.checkforUnique(JSON.parse(local.userInfo),returnArr)
           if(!isUnique){
             this.switchToChat(JSON.parse(local.userInfo).user)
           }
