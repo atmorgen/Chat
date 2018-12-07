@@ -156,7 +156,8 @@ ul {
 }
 
 .buttonForloop {
-    text-align: center;
+    display: flex;
+    justify-content: center;
 }
 
 .assignView:first-of-type {
