@@ -12,6 +12,7 @@ import { LoginComponent } from './login/login.component';
 import { GlobalJSONLibraryComponent } from './global-jsonlibrary/global-jsonlibrary.component';
 import { UsersWindowComponent } from './chat-window/users-window/users-window.component';
 import { IgnoreThisComponent } from './ignore-this/ignore-this.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { IgnoreThisComponent } from './ignore-this/ignore-this.component';
   imports: [
     BrowserModule,
     AngularFireModule.initializeApp(environment.firebase),
-    AngularFireDatabaseModule
+    AngularFireDatabaseModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

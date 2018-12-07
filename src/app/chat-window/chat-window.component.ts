@@ -7,6 +7,7 @@ import { IgnoreThisComponent } from '../ignore-this/ignore-this.component'
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.css']
 })
+
 export class ChatWindowComponent implements AfterViewInit {
 
   assignmentsNgFor:any;
@@ -201,6 +202,13 @@ export class ChatWindowComponent implements AfterViewInit {
       }
     }, 1500);
   }
+
+  /*giphyCall(searchTerm) {
+    let giphyReq = new XMLHttpRequest();
+    let giphyApi = "https://api.giphy.com/v1/gifs/search?q=" + searchTerm.value + "&api_key=XPiB25nCUJRXzHP0Mlre0qO6sXxIP6dl&rating=pg&limit=10";
+  console.log(searchTerm.value);
+  console.log(giphyApi);
+  }*/
 
 
   /* FOR WIKI */
