@@ -21,16 +21,16 @@
     <div id="rightSide">
       <div id="assignmentViewCanvas">
         <div class='buttonForloop' *ngFor="let json of assignmentsNgFor">
-          <button class="assignView">
+          <div class="assignView">
             <li class='list'>
               <ul class='nameText'>Name: {{json.user}}</ul>
               <ul class='text'>{{json.text}}</ul>
             </li>
-          </button>
+          </div>
         </div>
       </div>
-      <!--<button (click)="giphyCall(searchTerm)">Text button for Gifs!</button>
-      <input name="title" #searchTerm>-->
+      <button (click)="giphyCall(searchTerm)">Text button for Gifs!</button>
+      <input name="title" #searchTerm>
       
       <textarea id="textWindow" type="text"></textarea>
 
