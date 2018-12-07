@@ -1,12 +1,15 @@
-import { Component, AfterViewInit, HostListener, ViewChildren } from '@angular/core';
+import { Component, AfterViewInit, HostListener, ViewChildren, Input } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database'
 import { IgnoreThisComponent } from '../ignore-this/ignore-this.component'
+import axios from 'restyped-axios'
+import { GiphyAPI } from 'restyped-giphy-api';
 
 @Component({
   selector: 'app-chat-window',
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.css']
 })
+
 export class ChatWindowComponent implements AfterViewInit {
 
   assignmentsNgFor:any;
@@ -61,6 +64,11 @@ export class ChatWindowComponent implements AfterViewInit {
           this.wikiTrailFollow(callChecks[2])
         }else if(callChecks[0] == '/wiki') {
           this.wikipediaCall(callChecks[1])
+        }
+
+        /*Giphy*/
+        if(callChecks[0] == '/giphy') {
+          this.giphyCall(callChecks[1]);
         }
       }
     }
@@ -260,6 +268,17 @@ export class ChatWindowComponent implements AfterViewInit {
     }, 1500);
   }
 
+  giphyCall(input) {
+    let giphyApi:string = "https://api.giphy.com/v1/gifs/search?q=" + input + "&api_key=XPiB25nCUJRXzHP0Mlre0qO6sXxIP6dl&rating=pg&limit=10";
+    console.log(giphyApi)
+    const client = axios.create<GiphyAPI>({baseURL: giphyApi})
+
+    client.request({
+
+    }).then((rex)=>{
+      this.jsonClean(rex.data.data[0].images.looping.mp4)
+    })
+  }
 
   /* FOR WIKI */
 
@@ -268,6 +287,7 @@ export class ChatWindowComponent implements AfterViewInit {
     let apiSummary = 'https://en.wikipedia.org/api/rest_v1/page/summary/'
 
     request.open('GET', apiSummary + search, true);
+    
     request.onload = x => {
       var response = JSON.parse(request.response).extract
       if(response != undefined){

@@ -23,6 +23,10 @@
     "angularfire2": "^5.1.0",
     "core-js": "^2.5.4",
     "firebase": "^5.5.9",
+    "install": "^0.12.2",
+    "npm": "^6.4.1",
+    "restyped-axios": "^2.0.0",
+    "restyped-giphy-api": "^1.0.1",
     "rxjs": "~6.2.0",
     "zone.js": "~0.8.26"
   },
