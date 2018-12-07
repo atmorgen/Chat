@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.checkforStorage()
+    this.searchForPing()
   }
 
   openNewUserScreen(){
@@ -189,11 +190,13 @@ export class LoginComponent implements OnInit {
   }
 
   setToAFK(){
-    this.isAFK = true;
-    var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
-    var userName = JSON.parse(localStorage.getItem('userInfo')).user + '(AFK)'
-    this.db.database.ref('onlineUsers/users/' + key).update({'isAFK':this.isAFK})
-    this.db.database.ref('onlineUsers/users/' + key).update({'user':userName})
+    if(!this.isAFK){
+      this.isAFK = true;
+      var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
+      var userName = JSON.parse(localStorage.getItem('userInfo')).user + '(AFK)'
+      this.db.database.ref('onlineUsers/users/' + key).update({'isAFK':this.isAFK})
+      this.db.database.ref('onlineUsers/users/' + key).update({'user':userName})
+    }
   }
 
   returnFromAFK(){
@@ -206,6 +209,23 @@ export class LoginComponent implements OnInit {
       this.db.database.ref('onlineUsers/users/' + key).update({'user':userName})
     }
   }
+
+
+  /* Checking for Ping and responding to it */
+  searchForPing(){
+    var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
+    this.db.database.ref('onlineUsers/users/' + key).on('value',x =>{
+      this.respondToPing()
+    })   
+  }
+
+  respondToPing(){
+    var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
+    console.log('test')
+    this.db.database.ref('onlineUsers/users/' + key).update({'isOnline':true})
+  }
+
+
 }
 
 
