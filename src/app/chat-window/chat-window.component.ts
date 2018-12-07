@@ -131,37 +131,50 @@ export class ChatWindowComponent implements AfterViewInit {
     }
   }
 
-  updateNgFor(returnArr){
+  async updateNgFor(returnArr){
 
     let key = document.getElementById('refKey').getAttribute('key')
     if(returnArr.length == 2){
       let jsonHolder = returnArr[1][key]['session'];
       this.assignmentsNgFor = JSON.parse('[]')
       
-      var count = 0;
+      let count = 0;
+      let urlValue = ''
       for(key in jsonHolder){
         var urlRegex = /(https?:\/\/[^\s]+)/g;
         var isURL = false;
-        var el;
+        var elList = [];
         var url = jsonHolder[key].text.replace(urlRegex, function(url) {
           isURL = true;
+          var el;
           el = document.createElement('a')
-          el.innerText = 'test'
+          el.innerText = url
           el.href = url
+          urlValue = url
+          elList.push(el)
           return el//'<a href="' + url + '">' + url + '</a>';
         })
+        
         jsonHolder[key].text = url
         
-        if(isURL){
-          console.log(el)
-          document.getElementById('filterHeader').appendChild(el)
-          
-        }
-        
         this.assignmentsNgFor.push(jsonHolder[key])
+        
+        if(isURL){
+          await this.addLink(count,elList)
+        }
         count++;
       }
     }
+  }
+
+  addLink(count,elList){
+    setTimeout(() => {
+      for(var i = 0;i<elList.length;i++){
+        var el = elList[i]
+        var holder = document.getElementsByClassName('assignView')[count].firstElementChild.lastElementChild;
+        holder.innerHTML = holder.innerHTML.replace(el.href,el.outerHTML)
+      }
+    });
   }
 
   jsonClean(input: string){

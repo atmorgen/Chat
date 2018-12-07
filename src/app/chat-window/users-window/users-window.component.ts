@@ -40,7 +40,7 @@ export class UsersWindowComponent implements OnInit {
     var pmKeys = await this.getPMKeys(userKey)
     
     /* TO DO: Use this collection of PM keys to process the data for the UI */
-    console.log(pmKeys)
+    //console.log(pmKeys)
   }
 
   getUserKey(){
