@@ -33,16 +33,17 @@ export class UsersWindowComponent implements OnInit {
           }
         });
         this.usersNgFor = returnArr
-          setTimeout(() => {
-            for(var i = 0;i<document.getElementsByClassName('filterOptions').length;i++){
-              var name = (<HTMLElement>document.getElementsByClassName('filterOptions')[i]).innerText
-              var userName = JSON.parse(localStorage.getItem('userInfo')).user
+        
+        setTimeout(() => {
+          for(var i = 0;i<document.getElementsByClassName('filterOptions').length;i++){
+            var name:string = (<HTMLElement>document.getElementsByClassName('filterOptions')[i]).innerText.replace('(AFK)','').trim()
+            var userName = JSON.parse(localStorage.getItem('userInfo')).user
 
-              if(name.replace('(AFK)','')==userName){
-                document.getElementsByClassName('filterOptions')[i].className += ' active'
-              }
+            if(name==userName){
+              document.getElementsByClassName('filterOptions')[i].className += ' active'
             }
-          });
+          }
+        });
         
     }) 
   }

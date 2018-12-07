@@ -88,7 +88,6 @@ export class LoginComponent implements OnInit {
         if(isUnique){
           document.getElementById('loginExists').innerHTML = 'This ain\'t no login'
         }else{
-          console.log(userJSON)
           localStorage.setItem('userInfo',JSON.stringify(userJSON))
           this.switchToChat(userName)
         }

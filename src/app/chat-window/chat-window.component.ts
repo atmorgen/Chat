@@ -25,7 +25,6 @@ export class ChatWindowComponent implements AfterViewInit {
     }
 
   ngAfterViewInit() {
-    console.log(this.isLoggedOut)
     //subscribe on init
     this.getData();
     this.newMessage();
@@ -418,8 +417,6 @@ export class ChatWindowComponent implements AfterViewInit {
     this.postData(location,output);
   }
 
-  isLoggedOut: boolean = false;
-
   logOut(){
 
     let local = JSON.parse(localStorage.userInfo)
@@ -439,7 +436,6 @@ export class ChatWindowComponent implements AfterViewInit {
             break;
           }
         }
-        this.isLoggedOut = true;
         localStorage.clear();
         location.reload();
     }) 
