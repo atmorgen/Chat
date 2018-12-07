@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { GlobalJSONLibraryComponent } from '../global-jsonlibrary/global-jsonlibrary.component'
 import { AngularFireDatabase } from 'angularfire2/database'
 
@@ -45,31 +45,20 @@ export class LoginComponent implements OnInit {
           
           returnArr.push(item);
         });
-        let isUnique = this.checkforUnique(userJSON,returnArr)
+        let isUnique = this.glc.checkforUnique(userJSON,returnArr)
         
         if(isUnique){
-          this.postData('logins/users',userJSON)
-          this.closeNewUser()
+          if(userName.length > 5 && passWord.length > 5){
+            this.postData('logins/users',userJSON)
+            this.closeNewUser()
+          }else{
+            document.getElementById('userExists').innerHTML = 'Name and Password should be greater than 5 characters.'
+          }
         }else{
           document.getElementById('userExists').innerHTML = 'User already Exists...'
         }
     }) 
-  }
-
-  checkforUnique(input,returnArr){
-
-    let compareInput = input
-    let userDB = returnArr
-    let isUnique: boolean = true;
-
-    for(var i = 0;i<userDB.length;i++){
-      if(userDB[i].user == compareInput.user){
-          isUnique = false;
-          break;
-      }
-    }
-    return isUnique
-  }
+  }  
 
   //This references the AngularFireBase db which is created in 
   postData(ref,input){
@@ -94,13 +83,13 @@ export class LoginComponent implements OnInit {
           
           returnArr.push(item);
         });
-        let isUnique = this.checkforUnique(userJSON,returnArr)
+        let isUnique = this.glc.checkforUniquewithPass(userJSON,returnArr)
         
         if(isUnique){
           document.getElementById('loginExists').innerHTML = 'This ain\'t no login'
         }else{
-          this.switchToChat(userName)
           localStorage.setItem('userInfo',JSON.stringify(userJSON))
+          this.switchToChat(userName)
         }
       })
   }
@@ -119,7 +108,7 @@ export class LoginComponent implements OnInit {
           returnArr.push(item);
         });
         if(local.userInfo != undefined){
-          let isUnique = this.checkforUnique(JSON.parse(local.userInfo),returnArr)
+          let isUnique = this.glc.checkforUnique(JSON.parse(local.userInfo),returnArr)
           if(!isUnique){
             this.switchToChat(JSON.parse(local.userInfo).user)
           }
@@ -132,6 +121,8 @@ export class LoginComponent implements OnInit {
     document.getElementById('Assignments').style.display = 'block'
 
     this.compareToUsers(userName)
+    this.checkForAFK()
+    this.return()
   }
 
   compareToUsers(userName){
@@ -154,9 +145,73 @@ export class LoginComponent implements OnInit {
           }
         }
         if(!alreadyOnline){
-          let input = JSON.parse(`{"user":"${userName}"}`)
-          this.postData('onlineUsers/users',input)
+          let input = JSON.parse(`
+            {
+              "user":"${userName}",
+              "isAFK":"False"
+            }`)
+          var userKey = this.postData('onlineUsers/users',input)
+          var jsonHolder = JSON.parse(localStorage.getItem('userInfo'))
+          jsonHolder['onlineKey'] = userKey
+          localStorage.setItem('userInfo',JSON.stringify(jsonHolder))
         }
       })
   }
+
+  afkCount = 0;
+  isAFK = false;
+
+  @HostListener('document:keydown',['$event'])
+    onkeydown(){
+      this.returnFromAFK()
+    }
+
+  @HostListener('document:mousedown',['$event'])
+    onmousedown(){
+      this.returnFromAFK()
+    }
+
+  @HostListener('document:mousemove',['$event'])
+    onmousemove(){
+      this.returnFromAFK()
+    }
+  //subscribes to an event that runs when assignments have finished rendering
+  return(){
+    window.onfocus = x=> { this.returnFromAFK() };
+  }
+
+  /* Checking for AFK */
+  checkForAFK(){
+    this.isAFK = true
+    this.returnFromAFK();
+    setInterval(() => {
+      this.afkCount++
+      if(this.afkCount >= 10){
+        this.setToAFK()
+      }
+    }, 30000);  
+  }
+
+  setToAFK(){
+    if(!this.isAFK){
+      this.isAFK = true;
+      var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
+      var userName = JSON.parse(localStorage.getItem('userInfo')).user + '(AFK)'
+      this.db.database.ref('onlineUsers/users/' + key).update({'isAFK':this.isAFK})
+      this.db.database.ref('onlineUsers/users/' + key).update({'user':userName})
+    }
+  }
+
+  returnFromAFK(){
+    if(this.isAFK){
+      this.afkCount = 0;
+      this.isAFK = false; 
+      var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
+      var userName = JSON.parse(localStorage.getItem('userInfo')).user
+      this.db.database.ref('onlineUsers/users/' + key).update({'isAFK':this.isAFK})
+      this.db.database.ref('onlineUsers/users/' + key).update({'user':userName})
+    }
+  }
 }
+
+

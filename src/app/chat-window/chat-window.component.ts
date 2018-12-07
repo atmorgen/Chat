@@ -1,12 +1,15 @@
-import { Component, AfterViewInit, HostListener, ViewChildren } from '@angular/core';
+import { Component, AfterViewInit, HostListener, ViewChildren, Input } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database'
 import { IgnoreThisComponent } from '../ignore-this/ignore-this.component'
+import axios from 'restyped-axios'
+import { GiphyAPI } from 'restyped-giphy-api';
 
 @Component({
   selector: 'app-chat-window',
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.css']
 })
+
 export class ChatWindowComponent implements AfterViewInit {
 
   assignmentsNgFor:any;
@@ -18,9 +21,6 @@ export class ChatWindowComponent implements AfterViewInit {
   constructor(private db: AngularFireDatabase) { 
       //determines the rate at which the DOM is checked for the ngFor updates from the database
       setInterval(() => {
-        if(localStorage.userInfo != undefined){
-          this.userName = JSON.parse(localStorage.userInfo).user
-        }
       })
     }
 
@@ -29,6 +29,17 @@ export class ChatWindowComponent implements AfterViewInit {
     this.getData();
     this.newMessage();
     this.startFlash()
+    this.searchForPing();
+  }
+  
+  userPMSwitch(e){
+    let value = e.target.value
+
+    for(var i = 0;i<document.getElementsByClassName('userWindows').length;i++){
+      (<HTMLElement>document.getElementsByClassName('userWindows')[i]).style.display = 'none'
+    }
+
+    document.getElementById(value).style.display = 'flex'
   }
 
   @HostListener('keyup',['$event'])
@@ -52,31 +63,12 @@ export class ChatWindowComponent implements AfterViewInit {
         }else if(callChecks[0] == '/wiki') {
           this.wikipediaCall(callChecks[1])
         }
-      }
-    }
-  
-    logOut(){
 
-      let local = JSON.parse(localStorage.userInfo)
-  
-      var dbUpdate = this.db.database.ref('onlineUsers').once('value',
-        snapshot =>{
-          var returnArr = [];
-          snapshot.forEach(childSnapshot=> {
-            var item = childSnapshot.val();
-            
-            returnArr.push(item);
-          });
-  
-          for(var key in returnArr[0]){
-            if(returnArr[0][key].user == local.user){
-              this.db.database.ref('onlineUsers/users/' + key).remove()
-              break;
-            }
-          }
-          localStorage.clear();
-          location.reload();
-      }) 
+        /*Giphy*/
+        if(callChecks[0] == '/giphy') {
+          this.giphyCall(callChecks[1]);
+        }
+      }
     }
 
   getData(){
@@ -91,11 +83,16 @@ export class ChatWindowComponent implements AfterViewInit {
         });
         this.getKey(returnArr)
         this.updateNgFor(returnArr)
+
+        
         setTimeout(() => {
           document.getElementById('assignmentViewCanvas').scrollTop = document.getElementById('assignmentViewCanvas').scrollHeight;
         }, 200);
+        
 
-        this.newMessageBoo = true;
+        if(!this.windowFocus){
+          this.newMessageBoo = true;
+        }
     }) 
   }
 
@@ -117,19 +114,66 @@ export class ChatWindowComponent implements AfterViewInit {
     if(returnArr.length == 2){
       let jsonHolder = returnArr[1][key]['session'];
       this.assignmentsNgFor = JSON.parse('[]')
-      
+      let count = 0;
+      let urlValue = ''
       for(key in jsonHolder){
-        jsonHolder[key].text.replace(/\\n/g, '\n')
+
+        //URL Checks
+        var urlRegex = /(https?:\/\/[^\s]+)/g;
+        var isURL = false;
+        var elList = [];
+        var url = jsonHolder[key].text.replace(urlRegex, function(url) {
+          isURL = true;
+          var el;
+          el = document.createElement('a')
+          el.innerText = url
+          el.href = url
+          urlValue = url
+          elList.push(el)
+          return el
+        })
+
+
         this.assignmentsNgFor.push(jsonHolder[key])
+
+        if(isURL){
+          this.addLink(count,elList)
+        }
+        count++;
       }
     }
   }
 
+  addLink(count,elList){
+    setTimeout(() => {
+      for(var i = 0;i<elList.length;i++){
+        var el = elList[i]
+        var isJiffy = el.href.endsWith('.mp4')
+
+        if(isJiffy){
+          var outline = `<video width="320" height="240" controls>
+          <source src="${el.href}" type="video/mp4">
+          </video>`
+          var holder = document.getElementsByClassName('assignView')[count].firstElementChild.lastElementChild;
+          holder.innerHTML = holder.innerHTML.replace(el.href,outline)
+        }else{
+          var holder = document.getElementsByClassName('assignView')[count].firstElementChild.lastElementChild;
+          holder.innerHTML = holder.innerHTML.replace(el.href,el.outerHTML)
+        }
+      }
+    });
+  }
+
   jsonClean(input: string){
+    
+    input = input.replace(/"/g, '\\\"')
+    var userName = JSON.parse(localStorage.getItem('userInfo')).user
+    
+    var urlRegex = /(https?:\/\/[^\s]+)/g;
     
     let output = JSON.parse(`
       {
-        "user":"${this.userName}",
+        "user":"${userName}",
         "text":"${input.trim()}"
       }
     `);
@@ -137,7 +181,32 @@ export class ChatWindowComponent implements AfterViewInit {
     let key = document.getElementById('refKey').getAttribute('key');
     let location = 'chat/sessions/' + key + '/session' ;
     
-    this.postData(location,output);
+    this.postChatData(location,output);
+  }
+
+  postChatData(ref,input){
+    var dbUpdate = this.db.database.ref(ref).once('value',
+        snapshot =>{
+          var returnArr = [];
+          var keys = [];
+          snapshot.forEach(childSnapshot=> {
+            var item = childSnapshot.val();
+            keys.push(childSnapshot.key)
+            returnArr.push(item);
+          });
+
+          //checking last message to see if the same user.  If it is then create a text bubble for all chat
+          if(returnArr[returnArr.length-1].user == this.userName){
+            var output = returnArr[returnArr.length-1].text + '\n' + input.text
+            var key = keys[returnArr.length-1]
+            var fbKey = this.db.database.ref(ref + '/' + key).update({'text':output})
+          }else{
+            var fbKey2 = this.db.database.ref(ref).push(input); 
+            return fbKey2.key
+          }
+        })
+
+    
   }
 
   wipe(){
@@ -159,34 +228,32 @@ export class ChatWindowComponent implements AfterViewInit {
 
   //This references the AngularFireBase db which is created in 
   postData(ref,input){
+
     var fbKey = this.db.database.ref(ref).push(input); 
     
     return fbKey.key
   }
 
+  /* WINDOW FLASHING FOR NEW MESSAGES */
   windowFocus = true;
   newMessageBoo = false;
 
-  @HostListener('document:keydown',['$event'])
-    onkeydown(){
+  @HostListener('mousemove', ['$event'])
+    onMousemove() {
       this.newMessageBoo = false;
+      this.windowFocus = true;
+    }
+  
+  @HostListener('keydown', ['$event'])
+    onkeydown() {
+      this.newMessageBoo = false;
+      this.windowFocus = true;
     }
 
-  @HostListener('document:mousedown',['$event'])
-    onmousedown(){
-      this.newMessageBoo = false;
-    }
-
-  @HostListener('document:mousemove',['$event'])
-    onmousemove(){
-      this.newMessageBoo = false;
-    }
-
-  //subscribes to an event that runs when assignments have finished rendering
   newMessage(){
-    window.onfocus = x=> { this.newMessageBoo = false; };
+    window.onfocus = x=> { this.windowFocus = true; };
+    window.onblur = x=> { this.windowFocus = false; }
   }
-
 
   startFlash(){
 
@@ -202,6 +269,17 @@ export class ChatWindowComponent implements AfterViewInit {
     }, 1500);
   }
 
+  giphyCall(input) {
+    let giphyApi:string = "https://api.giphy.com/v1/gifs/search?q=" + input + "&api_key=XPiB25nCUJRXzHP0Mlre0qO6sXxIP6dl&rating=pg&limit=10";
+    console.log(giphyApi)
+    const client = axios.create<GiphyAPI>({baseURL: giphyApi})
+
+    client.request({
+
+    }).then((rex)=>{
+      this.jsonClean(rex.data.data[0].images.looping.mp4)
+    })
+  }
 
   /* FOR WIKI */
 
@@ -210,6 +288,7 @@ export class ChatWindowComponent implements AfterViewInit {
     let apiSummary = 'https://en.wikipedia.org/api/rest_v1/page/summary/'
 
     request.open('GET', apiSummary + search, true);
+    
     request.onload = x => {
       var response = JSON.parse(request.response).extract
       if(response != undefined){
@@ -336,5 +415,43 @@ export class ChatWindowComponent implements AfterViewInit {
     let location = 'chat/sessions/' + key + '/session' ;
     
     this.postData(location,output);
+  }
+
+  logOut(){
+
+    let local = JSON.parse(localStorage.userInfo)
+
+    var dbUpdate = this.db.database.ref('onlineUsers').once('value',
+      snapshot =>{
+        var returnArr = [];
+        snapshot.forEach(childSnapshot=> {
+          var item = childSnapshot.val();
+          
+          returnArr.push(item);
+        });
+
+        for(var key in returnArr[0]){
+          if(returnArr[0][key].user == local.user){
+            this.db.database.ref('onlineUsers/users/' + key).remove()
+            break;
+          }
+        }
+        localStorage.clear();
+        location.reload();
+    }) 
+  }
+
+
+   /* Checking for Ping and responding to it */
+   searchForPing(){
+    var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
+    this.db.database.ref('onlineUsers/users/' + key).on('value',x =>{
+        this.respondToPing()
+    })   
+  }
+
+  respondToPing(){
+    var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
+    this.db.database.ref('onlineUsers/users/' + key).update({'isOnline':true})
   }
 }

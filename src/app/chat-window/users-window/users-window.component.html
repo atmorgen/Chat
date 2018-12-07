@@ -1,8 +1,10 @@
 <div id="leftSide"> 
- <div id="filterCanvas">
+  <!--Users View-->
+  <div class='userWindows' id="usersCanvas">
     <li>
-      <ul *ngFor="let json of usersNgFor" class='filterOptions'><p>{{json.user}}</p></ul>
+      <ul (click)='expandUser($event)' *ngFor="let json of usersNgFor" class='filterOptions'><p class='filterUsers'>{{json.user}}</p></ul>
     </li>
   </div>
-  <div id="footerLeft"></div>
+
+  
 </div>

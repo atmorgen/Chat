@@ -4,12 +4,10 @@
     <div id="headerBar">
       <div id="filterHeader"><p>Users</p></div>
         <div id="assignmentHeader">
-          <div></div>
           <p>Chat</p>
           <button (click)='logOut()'>Logout</button>
         </div>
     </div>
-
 
     <div id="mainDiv">
 
@@ -18,14 +16,15 @@
     <div id="rightSide">
       <div id="assignmentViewCanvas">
         <div class='buttonForloop' *ngFor="let json of assignmentsNgFor">
-          <button class="assignView">
+          <div class="assignView">
             <li class='list'>
-              <ul class='nameText'>Name: {{json.user}}</ul>
+              <ul class='nameText'>{{json.user}}</ul>
               <ul class='text'>{{json.text}}</ul>
             </li>
-          </button>
+          </div>
         </div>
       </div>
+      
       <textarea id="textWindow" type="text"></textarea>
       <div id='refKey'></div>
     </div>
