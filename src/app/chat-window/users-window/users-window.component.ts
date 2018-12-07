@@ -28,21 +28,21 @@ export class UsersWindowComponent implements OnInit {
         var returnArr = [];
         snapshot.forEach(childSnapshot=> {
           var item = childSnapshot.val();
-          
-          returnArr.push(item);
-        });
-        this.usersNgFor = returnArr
-
-        setTimeout(() => {
-          for(var i = 0;i<document.getElementsByClassName('filterOptions').length;i++){
-            var name = (<HTMLElement>document.getElementsByClassName('filterOptions')[i]).innerText
-            var userName = JSON.parse(localStorage.getItem('userInfo')).user
-
-            if(name.replace('(AFK)','')==userName){
-              document.getElementsByClassName('filterOptions')[i].className += ' active'
-            }
+          if(item.user != undefined){
+            returnArr.push(item);
           }
         });
+        this.usersNgFor = returnArr
+          setTimeout(() => {
+            for(var i = 0;i<document.getElementsByClassName('filterOptions').length;i++){
+              var name = (<HTMLElement>document.getElementsByClassName('filterOptions')[i]).innerText
+              var userName = JSON.parse(localStorage.getItem('userInfo')).user
+
+              if(name.replace('(AFK)','')==userName){
+                document.getElementsByClassName('filterOptions')[i].className += ' active'
+              }
+            }
+          });
         
     }) 
   }

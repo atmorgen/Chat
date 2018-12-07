@@ -88,6 +88,7 @@ export class LoginComponent implements OnInit {
         if(isUnique){
           document.getElementById('loginExists').innerHTML = 'This ain\'t no login'
         }else{
+          console.log(userJSON)
           localStorage.setItem('userInfo',JSON.stringify(userJSON))
           this.switchToChat(userName)
         }
@@ -123,7 +124,6 @@ export class LoginComponent implements OnInit {
     this.compareToUsers(userName)
     this.checkForAFK()
     this.return()
-    this.searchForPing()
   }
 
   compareToUsers(userName){
@@ -213,22 +213,6 @@ export class LoginComponent implements OnInit {
       this.db.database.ref('onlineUsers/users/' + key).update({'user':userName})
     }
   }
-
-
-  /* Checking for Ping and responding to it */
-  searchForPing(){
-    var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
-    this.db.database.ref('onlineUsers/users/' + key).on('value',x =>{
-      this.respondToPing()
-    })   
-  }
-
-  respondToPing(){
-    var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
-    this.db.database.ref('onlineUsers/users/' + key).update({'isOnline':true})
-  }
-
-
 }
 
 

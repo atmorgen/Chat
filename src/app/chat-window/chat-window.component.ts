@@ -25,10 +25,12 @@ export class ChatWindowComponent implements AfterViewInit {
     }
 
   ngAfterViewInit() {
+    console.log(this.isLoggedOut)
     //subscribe on init
     this.getData();
     this.newMessage();
     this.startFlash()
+    this.searchForPing();
   }
   
   userPMSwitch(e){
@@ -69,30 +71,6 @@ export class ChatWindowComponent implements AfterViewInit {
         }
       }
     }
-  
-    logOut(){
-
-      let local = JSON.parse(localStorage.userInfo)
-  
-      var dbUpdate = this.db.database.ref('onlineUsers').once('value',
-        snapshot =>{
-          var returnArr = [];
-          snapshot.forEach(childSnapshot=> {
-            var item = childSnapshot.val();
-            
-            returnArr.push(item);
-          });
-  
-          for(var key in returnArr[0]){
-            if(returnArr[0][key].user == local.user){
-              this.db.database.ref('onlineUsers/users/' + key).remove()
-              break;
-            }
-          }
-          localStorage.clear();
-          location.reload();
-      }) 
-    }
 
   getData(){
     //find 'assignments reference in database and subscribe to it
@@ -131,13 +109,12 @@ export class ChatWindowComponent implements AfterViewInit {
     }
   }
 
-  async updateNgFor(returnArr){
+  updateNgFor(returnArr){
 
     let key = document.getElementById('refKey').getAttribute('key')
     if(returnArr.length == 2){
       let jsonHolder = returnArr[1][key]['session'];
       this.assignmentsNgFor = JSON.parse('[]')
-      
       let count = 0;
       let urlValue = ''
       for(key in jsonHolder){
@@ -156,7 +133,8 @@ export class ChatWindowComponent implements AfterViewInit {
           elList.push(el)
           return el
         })
-        
+
+
         this.assignmentsNgFor.push(jsonHolder[key])
 
         if(isURL){
@@ -190,12 +168,13 @@ export class ChatWindowComponent implements AfterViewInit {
   jsonClean(input: string){
     
     input = input.replace(/"/g, '\\\"')
+    var userName = JSON.parse(localStorage.getItem('userInfo')).user
     
     var urlRegex = /(https?:\/\/[^\s]+)/g;
     
     let output = JSON.parse(`
       {
-        "user":"${this.userName}",
+        "user":"${userName}",
         "text":"${input.trim()}"
       }
     `);
@@ -437,5 +416,46 @@ export class ChatWindowComponent implements AfterViewInit {
     let location = 'chat/sessions/' + key + '/session' ;
     
     this.postData(location,output);
+  }
+
+  isLoggedOut: boolean = false;
+
+  logOut(){
+
+    let local = JSON.parse(localStorage.userInfo)
+
+    var dbUpdate = this.db.database.ref('onlineUsers').once('value',
+      snapshot =>{
+        var returnArr = [];
+        snapshot.forEach(childSnapshot=> {
+          var item = childSnapshot.val();
+          
+          returnArr.push(item);
+        });
+
+        for(var key in returnArr[0]){
+          if(returnArr[0][key].user == local.user){
+            this.db.database.ref('onlineUsers/users/' + key).remove()
+            break;
+          }
+        }
+        this.isLoggedOut = true;
+        localStorage.clear();
+        location.reload();
+    }) 
+  }
+
+
+   /* Checking for Ping and responding to it */
+   searchForPing(){
+    var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
+    this.db.database.ref('onlineUsers/users/' + key).on('value',x =>{
+        this.respondToPing()
+    })   
+  }
+
+  respondToPing(){
+    var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
+    this.db.database.ref('onlineUsers/users/' + key).update({'isOnline':true})
   }
 }
