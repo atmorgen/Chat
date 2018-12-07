@@ -21,9 +21,6 @@ export class ChatWindowComponent implements AfterViewInit {
   constructor(private db: AngularFireDatabase) { 
       //determines the rate at which the DOM is checked for the ngFor updates from the database
       setInterval(() => {
-        if(localStorage.userInfo != undefined){
-          this.userName = JSON.parse(localStorage.userInfo).user
-        }
       })
     }
 
@@ -109,9 +106,12 @@ export class ChatWindowComponent implements AfterViewInit {
         });
         this.getKey(returnArr)
         this.updateNgFor(returnArr)
+
+        
         setTimeout(() => {
           document.getElementById('assignmentViewCanvas').scrollTop = document.getElementById('assignmentViewCanvas').scrollHeight;
         }, 200);
+        
 
         if(!this.windowFocus){
           this.newMessageBoo = true;
@@ -141,6 +141,8 @@ export class ChatWindowComponent implements AfterViewInit {
       let count = 0;
       let urlValue = ''
       for(key in jsonHolder){
+
+        //URL Checks
         var urlRegex = /(https?:\/\/[^\s]+)/g;
         var isURL = false;
         var elList = [];
@@ -152,15 +154,13 @@ export class ChatWindowComponent implements AfterViewInit {
           el.href = url
           urlValue = url
           elList.push(el)
-          return el//'<a href="' + url + '">' + url + '</a>';
+          return el
         })
         
-        jsonHolder[key].text = url
-        
         this.assignmentsNgFor.push(jsonHolder[key])
-        
+
         if(isURL){
-          await this.addLink(count,elList)
+          this.addLink(count,elList)
         }
         count++;
       }
@@ -171,8 +171,18 @@ export class ChatWindowComponent implements AfterViewInit {
     setTimeout(() => {
       for(var i = 0;i<elList.length;i++){
         var el = elList[i]
-        var holder = document.getElementsByClassName('assignView')[count].firstElementChild.lastElementChild;
-        holder.innerHTML = holder.innerHTML.replace(el.href,el.outerHTML)
+        var isJiffy = el.href.endsWith('.mp4')
+
+        if(isJiffy){
+          var outline = `<video width="320" height="240" controls>
+          <source src="${el.href}" type="video/mp4">
+          </video>`
+          var holder = document.getElementsByClassName('assignView')[count].firstElementChild.lastElementChild;
+          holder.innerHTML = holder.innerHTML.replace(el.href,outline)
+        }else{
+          var holder = document.getElementsByClassName('assignView')[count].firstElementChild.lastElementChild;
+          holder.innerHTML = holder.innerHTML.replace(el.href,el.outerHTML)
+        }
       }
     });
   }

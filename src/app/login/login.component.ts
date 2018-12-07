@@ -48,8 +48,12 @@ export class LoginComponent implements OnInit {
         let isUnique = this.glc.checkforUnique(userJSON,returnArr)
         
         if(isUnique){
-          this.postData('logins/users',userJSON)
-          this.closeNewUser()
+          if(userName.length > 5 && passWord.length > 5){
+            this.postData('logins/users',userJSON)
+            this.closeNewUser()
+          }else{
+            document.getElementById('userExists').innerHTML = 'Name and Password should be greater than 5 characters.'
+          }
         }else{
           document.getElementById('userExists').innerHTML = 'User already Exists...'
         }
