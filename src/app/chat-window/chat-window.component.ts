@@ -130,9 +130,28 @@ export class ChatWindowComponent implements AfterViewInit {
       let jsonHolder = returnArr[1][key]['session'];
       this.assignmentsNgFor = JSON.parse('[]')
       
+      var count = 0;
       for(key in jsonHolder){
-        jsonHolder[key].text.replace(/\\n/g, '\n')
+        var urlRegex = /(https?:\/\/[^\s]+)/g;
+        var isURL = false;
+        var el;
+        var url = jsonHolder[key].text.replace(urlRegex, function(url) {
+          isURL = true;
+          el = document.createElement('a')
+          el.innerText = 'test'
+          el.href = url
+          return el//'<a href="' + url + '">' + url + '</a>';
+        })
+        jsonHolder[key].text = url
+        
+        if(isURL){
+          console.log(el)
+          document.getElementById('filterHeader').appendChild(el)
+          
+        }
+        
         this.assignmentsNgFor.push(jsonHolder[key])
+        count++;
       }
     }
   }
@@ -140,6 +159,9 @@ export class ChatWindowComponent implements AfterViewInit {
   jsonClean(input: string){
     
     input = input.replace(/"/g, '\\\"')
+    
+    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    
     let output = JSON.parse(`
       {
         "user":"${this.userName}",
