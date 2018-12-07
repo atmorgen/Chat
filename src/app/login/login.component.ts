@@ -16,7 +16,6 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.checkforStorage()
-    this.searchForPing()
   }
 
   openNewUserScreen(){
@@ -120,6 +119,7 @@ export class LoginComponent implements OnInit {
     this.compareToUsers(userName)
     this.checkForAFK()
     this.return()
+    this.searchForPing()
   }
 
   compareToUsers(userName){
@@ -221,7 +221,6 @@ export class LoginComponent implements OnInit {
 
   respondToPing(){
     var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
-    console.log('test')
     this.db.database.ref('onlineUsers/users/' + key).update({'isOnline':true})
   }
 
