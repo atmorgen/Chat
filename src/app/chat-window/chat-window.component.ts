@@ -413,10 +413,13 @@ export class ChatWindowComponent implements AfterViewInit {
   
   wikiClean(input: string,name){
     
+    let date = new Date()
+
     let output = JSON.parse(`
       {
         "user":"${name}",
-        "text":"${input.trim()}"
+        "text":"${input.trim()}",
+        "time":"${date.toLocaleString()}"
       }
     `);
 
