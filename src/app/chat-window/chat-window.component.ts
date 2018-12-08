@@ -514,7 +514,9 @@ export class ChatWindowComponent implements AfterViewInit {
     var target = e.target.innerText
     this.havingPM = true;
     this.assignmentsNgFor = JSON.parse('[]')
+    this.highLight(e)
 
+    //gets the PM key
     for(var i = 0;i<this.privateMessagesNgFor.length;i++){
       if(this.privateMessagesNgFor[i].userTarget == target){
         this.pmKey = this.privateMessagesNgFor[i].pmKey;
@@ -531,9 +533,25 @@ export class ChatWindowComponent implements AfterViewInit {
           returnArr.push(item);
         });
         this.updateNgFor(returnArr)
+
+        setTimeout(() => {
+          document.getElementById('assignmentViewCanvas').scrollTop = document.getElementById('assignmentViewCanvas').scrollHeight;
+        }, 200);
       })
     
     this.db.database.ref('chat').off('value')
+  }
+
+  highLight(e){
+
+    var target = e.target;
+
+    for(var i = 0;i<document.getElementsByClassName('pmList').length;i++){
+      document.getElementsByClassName('pmList')[i].className = 'pmList'
+    }
+
+    target.className += ' active';
+
   }
 
   openMainChat(){
@@ -541,6 +559,11 @@ export class ChatWindowComponent implements AfterViewInit {
     this.havingPM = false;
     this.getData()
     this.db.database.ref('privateMessages').off('value')
+
+    //reset pm colors to original
+    for(var i = 0;i<document.getElementsByClassName('pmList').length;i++){
+      document.getElementsByClassName('pmList')[i].className = 'pmList'
+    }
   }
 
   //#endregion

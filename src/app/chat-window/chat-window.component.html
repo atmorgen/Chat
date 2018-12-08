@@ -17,7 +17,7 @@
         <div id="assignmentViewCanvas">
 
           <ul class='privateChat'>
-              <li *ngFor="let json of privateMessagesNgFor"  (click)='openPM($event)'>{{json.userTarget}}</li>
+              <li class='pmList' *ngFor="let json of privateMessagesNgFor"  (click)='openPM($event)'>{{json.userTarget}}</li>
           </ul>
 
 

@@ -248,3 +248,7 @@ textarea{
     background: black;
     cursor: pointer;
 }
+
+.privateChat .pmList.active{
+    background-color: red;
+}
