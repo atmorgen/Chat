@@ -202,8 +202,6 @@ export class ChatWindowComponent implements AfterViewInit {
           //diff in minutes
           let timeDiff = (nowTime - userDate)/60000
 
-          console.log(timeDiff)
-
           //checking last message to see if the same user && if less than 5 minutes then add it to the previous one.  If it is then create a text bubble for all chat 
           if(returnArr[returnArr.length-1].user == userName && timeDiff < 5){
             var output = returnArr[returnArr.length-1].text + '\n' + input.text
@@ -222,11 +220,13 @@ export class ChatWindowComponent implements AfterViewInit {
 
     this.db.database.ref("chat/key").remove();
     let userName = JSON.parse(localStorage.getItem('userInfo')).user
+    let date = new Date();
     let output = JSON.parse(`{
       "session":[
         {
           "user":"${userName}",
-          "text":"Database was Wiped"
+          "text":"Database was Wiped",
+          "time":"${date.toLocaleString()}"
         }
       ]
     }`)
