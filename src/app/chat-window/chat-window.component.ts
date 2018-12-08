@@ -36,14 +36,9 @@ export class ChatWindowComponent implements AfterViewInit {
       let input = (<HTMLInputElement>document.getElementById('textWindow')).value.toString();
       (<HTMLTextAreaElement>document.getElementById('textWindow')).value = '';
 
-      if(!this.havingPM){
-        let key = document.getElementById('refKey').getAttribute('key');
-        let location = 'chat/sessions/' + key + '/session';
-        this.jsonClean(input,location)
-      }else{
-        let location = 'privateMessages/sessions/' + this.pmKey + '/session';
-        this.jsonClean(input,location)
-      }
+      
+      this.jsonClean(input)
+      
 
       var callChecks = input.split(' ')
 
@@ -159,7 +154,7 @@ export class ChatWindowComponent implements AfterViewInit {
     });
   }
 
-  jsonClean(input: string,locationInput){
+  jsonClean(input: string){
     
     input = input.replace(/"/g, '\\\"')
     var userName = JSON.parse(localStorage.getItem('userInfo')).user
@@ -174,9 +169,15 @@ export class ChatWindowComponent implements AfterViewInit {
       }
     `);
 
+    let location = ''
+    if(!this.havingPM){
+      let key = document.getElementById('refKey').getAttribute('key');
+      location = 'chat/sessions/' + key + '/session';
+    }else{
+      location = 'privateMessages/sessions/' + this.pmKey + '/session';
+    }
     
-    
-    this.postChatData(locationInput,output);
+    this.postChatData(location,output);
   }
 
   postChatData(ref,input){
@@ -246,9 +247,7 @@ export class ChatWindowComponent implements AfterViewInit {
     client.request({
 
     }).then((rex)=>{
-      let key = document.getElementById('refKey').getAttribute('key');
-      let location = 'chat/sessions/' + key + '/session';
-      this.jsonClean(rex.data.data[0].images.looping.mp4,location)
+      this.jsonClean(rex.data.data[0].images.looping.mp4)
     })
   }
 
@@ -449,8 +448,15 @@ export class ChatWindowComponent implements AfterViewInit {
       }
     `);
 
-    let key = document.getElementById('refKey').getAttribute('key');
-    let location = 'chat/sessions/' + key + '/session' ;
+    let location = ''
+
+    if(!this.havingPM){
+      let key = document.getElementById('refKey').getAttribute('key');
+      location = 'chat/sessions/' + key + '/session';
+    }else{
+      location = 'privateMessages/sessions/' + this.pmKey + '/session';
+    }
+
     
     this.postData(location,output);
   }
@@ -482,7 +488,6 @@ export class ChatWindowComponent implements AfterViewInit {
     var dbUpdate = this.db.database.ref('logins/users/' + key + '/privateMessages').on('value',
       snapshot =>{
         var returnArr = [];
-        var jsonHOlder = []
         snapshot.forEach(childSnapshot=> {
           var item = childSnapshot.val();
           
