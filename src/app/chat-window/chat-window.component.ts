@@ -1,6 +1,5 @@
-import { Component, AfterViewInit, HostListener, ViewChildren, Input } from '@angular/core';
+import { Component, AfterViewInit, HostListener } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database'
-import { IgnoreThisComponent } from '../ignore-this/ignore-this.component'
 import axios from 'restyped-axios'
 import { GiphyAPI } from 'restyped-giphy-api';
 
@@ -13,6 +12,8 @@ import { GiphyAPI } from 'restyped-giphy-api';
 export class ChatWindowComponent implements AfterViewInit {
 
   assignmentsNgFor:any;
+  privateMessagesNgFor: any;
+  havingPM: boolean = false;
 
   constructor(private db: AngularFireDatabase) { 
       //determines the rate at which the DOM is checked for the ngFor updates from the database
@@ -26,46 +27,45 @@ export class ChatWindowComponent implements AfterViewInit {
     this.newMessage();
     this.startFlash()
     this.searchForPing();
-  }
-  
-  userPMSwitch(e){
-    let value = e.target.value
-
-    for(var i = 0;i<document.getElementsByClassName('userWindows').length;i++){
-      (<HTMLElement>document.getElementsByClassName('userWindows')[i]).style.display = 'none'
-    }
-
-    document.getElementById(value).style.display = 'flex'
+    this.privateMessaging();
   }
 
   @HostListener('keyup',['$event'])
-    onkeyup(e){
-      if(document.getElementById('textWindow') == document.activeElement && e.key == "Enter"){
-        let input = (<HTMLInputElement>document.getElementById('textWindow')).value.toString();
-        (<HTMLTextAreaElement>document.getElementById('textWindow')).value = '';
-        this.jsonClean(input)
+  onkeyup(e){
+    if(document.getElementById('textWindow') == document.activeElement && e.key == "Enter"){
+      let input = (<HTMLInputElement>document.getElementById('textWindow')).value.toString();
+      (<HTMLTextAreaElement>document.getElementById('textWindow')).value = '';
 
-        var callChecks = input.split(' ')
+      if(!this.havingPM){
+        let key = document.getElementById('refKey').getAttribute('key');
+        let location = 'chat/sessions/' + key + '/session';
+        this.jsonClean(input,location)
+      }else{
+        let location = 'privateMessages/sessions/' + this.pmKey + '/session';
+        this.jsonClean(input,location)
+      }
+
+      var callChecks = input.split(' ')
 
 
-        if(callChecks[0].trim() == '/wipe') {
-          this.wipe()
-        }
+      if(callChecks[0].trim() == '/wipe') {
+        this.wipe()
+      }
 
-        /* Wiki Calls */
-        if(callChecks[0] == '/wiki' && callChecks[1].toLowerCase() == 'follow'){
-          this.resetWikiTrails();
-          this.wikiTrailFollow(callChecks[2])
-        }else if(callChecks[0] == '/wiki') {
-          this.wikipediaCall(callChecks[1])
-        }
+      /* Wiki Calls */
+      if(callChecks[0] == '/wiki' && callChecks[1].toLowerCase() == 'follow'){
+        this.resetWikiTrails();
+        this.wikiTrailFollow(callChecks[2])
+      }else if(callChecks[0] == '/wiki') {
+        this.wikipediaCall(callChecks[1])
+      }
 
-        /*Giphy*/
-        if(callChecks[0] == '/giphy') {
-          this.giphyCall(callChecks[1]);
-        }
+      /*Giphy*/
+      if(callChecks[0] == '/giphy') {
+        this.giphyCall(callChecks[1]);
       }
     }
+  }
 
   getData(){
     //find 'assignments reference in database and subscribe to it
@@ -78,16 +78,18 @@ export class ChatWindowComponent implements AfterViewInit {
           returnArr.push(item);
         });
         this.getKey(returnArr)
-        this.updateNgFor(returnArr)
 
+        if(!this.havingPM){
+          let key = document.getElementById('refKey').getAttribute('key')
+          this.updateNgFor(returnArr[1][key]['session'])
+                
+          setTimeout(() => {
+            document.getElementById('assignmentViewCanvas').scrollTop = document.getElementById('assignmentViewCanvas').scrollHeight;
+          }, 200);
         
-        setTimeout(() => {
-          document.getElementById('assignmentViewCanvas').scrollTop = document.getElementById('assignmentViewCanvas').scrollHeight;
-        }, 200);
-        
-
-        if(!this.windowFocus){
-          this.newMessageBoo = true;
+          if(!this.windowFocus){
+            this.newMessageBoo = true;
+          }
         }
     }) 
   }
@@ -100,19 +102,18 @@ export class ChatWindowComponent implements AfterViewInit {
       for(key in returnArr[0]){
         key = returnArr[0][key]
         document.getElementById('refKey').setAttribute('key',key)
+
+        let jsonHolder = JSON.parse(localStorage.getItem('userInfo'))
       }
     }
   }
 
   updateNgFor(returnArr){
 
-    let key = document.getElementById('refKey').getAttribute('key')
-    if(returnArr.length == 2){
-      let jsonHolder = returnArr[1][key]['session'];
+      let jsonHolder = returnArr;
       this.assignmentsNgFor = JSON.parse('[]')
       let count = 0;
-      let urlValue = ''
-      for(key in jsonHolder){
+      for(var key in jsonHolder){
 
         //URL Checks
         var urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -124,11 +125,9 @@ export class ChatWindowComponent implements AfterViewInit {
           el = document.createElement('a')
           el.innerText = url
           el.href = url
-          urlValue = url
           elList.push(el)
           return el
         })
-
 
         this.assignmentsNgFor.push(jsonHolder[key])
 
@@ -137,7 +136,7 @@ export class ChatWindowComponent implements AfterViewInit {
         }
         count++;
       }
-    }
+    
   }
 
   addLink(count,elList){
@@ -160,12 +159,11 @@ export class ChatWindowComponent implements AfterViewInit {
     });
   }
 
-  jsonClean(input: string){
+  jsonClean(input: string,locationInput){
     
     input = input.replace(/"/g, '\\\"')
     var userName = JSON.parse(localStorage.getItem('userInfo')).user
-    
-    var urlRegex = /(https?:\/\/[^\s]+)/g;
+
     var date = new Date()
     
     let output = JSON.parse(`
@@ -176,10 +174,9 @@ export class ChatWindowComponent implements AfterViewInit {
       }
     `);
 
-    let key = document.getElementById('refKey').getAttribute('key');
-    let location = 'chat/sessions/' + key + '/session' ;
     
-    this.postChatData(location,output);
+    
+    this.postChatData(locationInput,output);
   }
 
   postChatData(ref,input){
@@ -206,14 +203,13 @@ export class ChatWindowComponent implements AfterViewInit {
           if(returnArr[returnArr.length-1].user == userName && timeDiff < 5){
             var output = returnArr[returnArr.length-1].text + '\n' + input.text
             var key = keys[returnArr.length-1]
-            var fbKey = this.db.database.ref(ref + '/' + key).update({'text':output})
+            this.db.database.ref(ref + '/' + key).update({'text':output})
+            return key
           }else{
             var fbKey2 = this.db.database.ref(ref).push(input); 
             return fbKey2.key
           }
         })
-
-    
   }
 
   wipe(){
@@ -243,7 +239,46 @@ export class ChatWindowComponent implements AfterViewInit {
     return fbKey.key
   }
 
+  giphyCall(input) {
+    let giphyApi:string = "https://api.giphy.com/v1/gifs/search?q=" + input + "&api_key=XPiB25nCUJRXzHP0Mlre0qO6sXxIP6dl&rating=pg&limit=10";
+    const client = axios.create<GiphyAPI>({baseURL: giphyApi})
+
+    client.request({
+
+    }).then((rex)=>{
+      let key = document.getElementById('refKey').getAttribute('key');
+      let location = 'chat/sessions/' + key + '/session';
+      this.jsonClean(rex.data.data[0].images.looping.mp4,location)
+    })
+  }
+
+  logOut(){
+
+    let local = JSON.parse(localStorage.userInfo)
+
+    var dbUpdate = this.db.database.ref('onlineUsers').once('value',
+      snapshot =>{
+        var returnArr = [];
+        snapshot.forEach(childSnapshot=> {
+          var item = childSnapshot.val();
+          
+          returnArr.push(item);
+        });
+
+        for(var key in returnArr[0]){
+          if(returnArr[0][key].user == local.user){
+            this.db.database.ref('onlineUsers/users/' + key).remove()
+            break;
+          }
+        }
+        localStorage.clear();
+        location.reload();
+    }) 
+  }
+
   /* WINDOW FLASHING FOR NEW MESSAGES */
+  //#region Window Flash
+
   windowFocus = true;
   newMessageBoo = false;
 
@@ -278,19 +313,10 @@ export class ChatWindowComponent implements AfterViewInit {
     }, 1500);
   }
 
-  giphyCall(input) {
-    let giphyApi:string = "https://api.giphy.com/v1/gifs/search?q=" + input + "&api_key=XPiB25nCUJRXzHP0Mlre0qO6sXxIP6dl&rating=pg&limit=10";
-    console.log(giphyApi)
-    const client = axios.create<GiphyAPI>({baseURL: giphyApi})
-
-    client.request({
-
-    }).then((rex)=>{
-      this.jsonClean(rex.data.data[0].images.looping.mp4)
-    })
-  }
+  //#endregion
 
   /* FOR WIKI */
+  //#region Wikipedia 
 
   wikipediaCall(search){
     let request = new XMLHttpRequest();
@@ -429,32 +455,10 @@ export class ChatWindowComponent implements AfterViewInit {
     this.postData(location,output);
   }
 
-  logOut(){
-
-    let local = JSON.parse(localStorage.userInfo)
-
-    var dbUpdate = this.db.database.ref('onlineUsers').once('value',
-      snapshot =>{
-        var returnArr = [];
-        snapshot.forEach(childSnapshot=> {
-          var item = childSnapshot.val();
-          
-          returnArr.push(item);
-        });
-
-        for(var key in returnArr[0]){
-          if(returnArr[0][key].user == local.user){
-            this.db.database.ref('onlineUsers/users/' + key).remove()
-            break;
-          }
-        }
-        localStorage.clear();
-        location.reload();
-    }) 
-  }
-
+  //#endregion
 
    /* Checking for Ping and responding to it */
+   //#region Ping
    searchForPing(){
     var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
     this.db.database.ref('onlineUsers/users/' + key).on('value',x =>{
@@ -466,4 +470,74 @@ export class ChatWindowComponent implements AfterViewInit {
     var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
     this.db.database.ref('onlineUsers/users/' + key).update({'isOnline':true})
   }
+  //#endregion
+
+  /* Private Messaging */
+  //#region 
+
+  privateMessaging(){
+
+    let key = JSON.parse(localStorage.getItem('userInfo')).loginKey
+
+    var dbUpdate = this.db.database.ref('logins/users/' + key + '/privateMessages').on('value',
+      snapshot =>{
+        var returnArr = [];
+        var jsonHOlder = []
+        snapshot.forEach(childSnapshot=> {
+          var item = childSnapshot.val();
+          
+          returnArr.push(item);
+        });
+        this.privateMessagesNgFor = [];
+        for(var i = 0;i<returnArr.length;i++){
+
+          let output = JSON.parse(`
+            {
+              "pmKey":"${returnArr[i].pmKey}",
+              "userTarget":"${returnArr[i].users[0].userTarget}"
+            }
+          
+          `)
+
+          this.privateMessagesNgFor.push(output)
+        }
+      })
+  }
+
+  pmKey;
+  openPM(e){
+    var target = e.target.innerText
+    this.havingPM = true;
+    this.assignmentsNgFor = JSON.parse('[]')
+
+    for(var i = 0;i<this.privateMessagesNgFor.length;i++){
+      if(this.privateMessagesNgFor[i].userTarget == target){
+        this.pmKey = this.privateMessagesNgFor[i].pmKey;
+        break;
+      }
+    }
+    
+    var dbUpdate = this.db.database.ref('privateMessages/sessions/' + this.pmKey + '/session').on('value',
+      snapshot =>{
+        var returnArr = [];
+        snapshot.forEach(childSnapshot=> {
+          var item = childSnapshot.val();
+          
+          returnArr.push(item);
+        });
+        this.updateNgFor(returnArr)
+      })
+    
+    this.db.database.ref('chat').off('value')
+  }
+
+  openMainChat(){
+    
+    this.havingPM = false;
+    this.getData()
+    this.db.database.ref('privateMessages').off('value')
+  }
+
+  //#endregion
+
 }

@@ -229,3 +229,22 @@ textarea{
 .list{
     list-style-type: none;
 }
+
+.privateChat{
+    position: fixed;
+}
+
+.privateChat li{
+    display: inline;
+    color: white;
+    background-color: gray;
+    border: 1px solid black;
+    margin-right: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.privateChat li:hover{
+    background: black;
+    cursor: pointer;
+}
