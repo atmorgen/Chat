@@ -97,6 +97,7 @@ export class LoginComponent implements OnInit {
           
           localStorage.setItem('userInfo',JSON.stringify(userJSON))
           this.switchToChat(userName)
+          location.reload();
         }
       })
   }
