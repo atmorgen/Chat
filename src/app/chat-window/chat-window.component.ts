@@ -13,10 +13,6 @@ import { GiphyAPI } from 'restyped-giphy-api';
 export class ChatWindowComponent implements AfterViewInit {
 
   assignmentsNgFor:any;
-  target: HTMLElement;
-  userName;
-
-  wiki:IgnoreThisComponent = new IgnoreThisComponent(this.db)
 
   constructor(private db: AngularFireDatabase) { 
       //determines the rate at which the DOM is checked for the ngFor updates from the database
@@ -197,8 +193,19 @@ export class ChatWindowComponent implements AfterViewInit {
             returnArr.push(item);
           });
 
-          //checking last message to see if the same user.  If it is then create a text bubble for all chat
-          if(returnArr[returnArr.length-1].user == this.userName){
+          //gets the userName
+          let userName = JSON.parse(localStorage.getItem('userInfo')).user
+          //These are used to calculate the amount of time since last timeStamp
+          let userDate = Date.parse(returnArr[returnArr.length-1].time)
+          let nowDate = new Date();
+          let nowTime = nowDate.getTime()
+          //diff in minutes
+          let timeDiff = (nowTime - userDate)/60000
+
+          console.log(timeDiff)
+
+          //checking last message to see if the same user && if less than 5 minutes then add it to the previous one.  If it is then create a text bubble for all chat 
+          if(returnArr[returnArr.length-1].user == userName && timeDiff < 5){
             var output = returnArr[returnArr.length-1].text + '\n' + input.text
             var key = keys[returnArr.length-1]
             var fbKey = this.db.database.ref(ref + '/' + key).update({'text':output})
@@ -214,11 +221,11 @@ export class ChatWindowComponent implements AfterViewInit {
   wipe(){
 
     this.db.database.ref("chat/key").remove();
-
+    let userName = JSON.parse(localStorage.getItem('userInfo')).user
     let output = JSON.parse(`{
       "session":[
         {
-          "user":"${this.userName}",
+          "user":"${userName}",
           "text":"Database was Wiped"
         }
       ]
