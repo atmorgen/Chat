@@ -18,7 +18,7 @@
         <div class='buttonForloop' *ngFor="let json of assignmentsNgFor">
           <div class="assignView">
             <li class='list'>
-              <ul class='nameText'>{{json.user}}</ul>
+              <div style="display: flex;"><ul class='nameText'>{{json.user}}</ul><div class='time'>{{json.time}}</div></div>
               <ul class='text'>{{json.text}}</ul>
             </li>
           </div>

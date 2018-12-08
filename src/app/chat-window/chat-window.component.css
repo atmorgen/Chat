@@ -211,6 +211,12 @@ ul {
     flex-wrap: wrap;
 }
 
+.time{
+    color: black;
+    font-size: 12px;
+    margin-left: 85%;
+}
+
 textarea{
     height: 80px; 
     width: 90%;

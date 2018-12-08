@@ -170,11 +170,13 @@ export class ChatWindowComponent implements AfterViewInit {
     var userName = JSON.parse(localStorage.getItem('userInfo')).user
     
     var urlRegex = /(https?:\/\/[^\s]+)/g;
+    var date = new Date()
     
     let output = JSON.parse(`
       {
         "user":"${userName}",
-        "text":"${input.trim()}"
+        "text":"${input.trim()}",
+        "time":"${date.toLocaleString()}"
       }
     `);
 
