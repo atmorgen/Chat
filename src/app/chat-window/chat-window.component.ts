@@ -1,7 +1,9 @@
 import { Component, AfterViewInit, HostListener } from '@angular/core';
-import { AngularFireDatabase } from 'angularfire2/database'
+import { AngularFireDatabase, snapshotChanges } from 'angularfire2/database'
 import axios from 'restyped-axios'
 import { GiphyAPI } from 'restyped-giphy-api';
+import { ReturnStatement } from '@angular/compiler';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-chat-window',
@@ -28,6 +30,7 @@ export class ChatWindowComponent implements AfterViewInit {
     this.startFlash()
     this.searchForPing();
     this.privateMessaging();
+    this.checkforNewPMs();
   }
 
   @HostListener('keyup',['$event'])
@@ -36,9 +39,8 @@ export class ChatWindowComponent implements AfterViewInit {
       let input = (<HTMLInputElement>document.getElementById('textWindow')).value.toString();
       (<HTMLTextAreaElement>document.getElementById('textWindow')).value = '';
 
-      
       this.jsonClean(input)
-      
+
 
       var callChecks = input.split(' ')
 
@@ -175,6 +177,7 @@ export class ChatWindowComponent implements AfterViewInit {
       location = 'chat/sessions/' + key + '/session';
     }else{
       location = 'privateMessages/sessions/' + this.pmKey + '/session';
+      this.SetPMAlert()
     }
     
     this.postChatData(location,output);
@@ -503,7 +506,6 @@ export class ChatWindowComponent implements AfterViewInit {
             }
           
           `)
-
           this.privateMessagesNgFor.push(output)
         }
       })
@@ -538,7 +540,7 @@ export class ChatWindowComponent implements AfterViewInit {
           document.getElementById('assignmentViewCanvas').scrollTop = document.getElementById('assignmentViewCanvas').scrollHeight;
         }, 200);
       })
-    
+    this.removeNewPMsAlert(target)
     this.db.database.ref('chat').off('value')
   }
 
@@ -554,11 +556,112 @@ export class ChatWindowComponent implements AfterViewInit {
 
   }
 
+  /* Sets newPM tag in targets personal db to true for UI purposes */
+  SetPMAlert(){
+
+    var user = document.getElementsByClassName('pmList active')[0].innerHTML
+    var user2 = JSON.parse(localStorage.getItem('userInfo')).user
+
+    if(user != user2){
+      
+      var target = user;
+
+      this.db.database.ref('logins').once('value',
+    
+      snapShot=>{
+        var returnArr = []
+        snapShot.forEach(childSnapshot =>{
+          var item = childSnapshot.val();
+          
+          returnArr.push(item);
+        })
+        
+        for(var key in returnArr[0]){
+          if(returnArr[0][key].user == target){                  
+
+            let output = JSON.parse(`
+              {
+                "newMessageUser":"${user2}"
+              }
+            
+            `)
+
+            this.db.database.ref('logins/users/' + key + '/newMessages').push(output)
+          }
+        }
+      })
+    }
+  }
+
+  checkforNewPMs(){
+
+    let key = JSON.parse(localStorage.getItem('userInfo')).loginKey
+
+    this.db.database.ref('logins/users/' + key + '/newMessages').on('value',
+    snapShot=>{
+      var returnArr = []
+      snapShot.forEach(childSnapshot =>{
+        var item = childSnapshot.val();
+        
+        returnArr.push(item);
+      })
+
+
+      setTimeout(() => {
+        for(var i = 0;i<returnArr.length;i++){
+          var newMessageUser = returnArr[i].newMessageUser
+          var pmUsers = document.getElementsByClassName('pmList')
+          for(var j = 0;j<pmUsers.length;j++){
+            var pmHolders = pmUsers[j].innerHTML
+            
+            if(newMessageUser == pmHolders){
+              (<HTMLElement>pmUsers[j]).style.border = '2px solid green';
+            }
+          }
+        }
+      });
+      
+    })
+  }
+
+  removeNewPMsAlert(target){
+
+    let key = JSON.parse(localStorage.getItem('userInfo')).loginKey
+
+    this.db.database.ref('logins/users/' + key + '/newMessages').once('value',
+    snapShot=>{
+      var returnArr = []
+      var keys = []
+      snapShot.forEach(childSnapshot =>{
+        var item = childSnapshot.val();
+        
+        keys.push(childSnapshot.key)
+        returnArr.push(item);
+      })
+      
+      setTimeout(() => {
+        for(var i = 0;i<returnArr.length;i++){
+          var newMessageUser = returnArr[i].newMessageUser
+          
+          if(newMessageUser == target){
+            this.db.database.ref('logins/users/' + key + '/newMessages/' + keys[i]).remove()
+
+            var pmUsers = document.getElementsByClassName('pmList')
+            for(var j = 0;j<pmUsers.length;j++){
+              (<HTMLElement>pmUsers[j]).style.border = '1px solid black'
+            }
+          }
+        }
+      });
+    })
+    
+  }
+
   openMainChat(){
     
     this.havingPM = false;
     this.getData()
-    this.db.database.ref('privateMessages').off('value')
+    this.db.database.ref('privateMessages/sessions/' + this.pmKey + '/session').off('value')
 
     //reset pm colors to original
     for(var i = 0;i<document.getElementsByClassName('pmList').length;i++){
