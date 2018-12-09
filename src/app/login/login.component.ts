@@ -74,7 +74,7 @@ export class LoginComponent implements OnInit {
     let passWord = (<HTMLInputElement>document.getElementById('passWord')).value
     let userJSON = this.glc.userInfoJSON(userName,passWord)
 
-    //find 'assignments reference in database and subscribe to it
+
     var dbUpdate = this.db.database.ref('logins/users').once('value',
       snapshot =>{
         var returnArr = [];
@@ -84,12 +84,20 @@ export class LoginComponent implements OnInit {
           returnArr.push(item);
         });
         let isUnique = this.glc.checkforUniquewithPass(userJSON,returnArr)
-        
         if(isUnique){
           document.getElementById('loginExists').innerHTML = 'This ain\'t no login'
         }else{
+          //adds loginKey from database to userInfo localstorage
+          for(var i = 0;i<returnArr.length;i++){
+            if(returnArr[i].user == userName){
+              let key = Object.keys(snapshot.val())[i]
+              userJSON['loginKey'] = key
+            }
+          }
+          
           localStorage.setItem('userInfo',JSON.stringify(userJSON))
           this.switchToChat(userName)
+          location.reload();
         }
       })
   }

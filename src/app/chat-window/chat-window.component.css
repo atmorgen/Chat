@@ -211,6 +211,12 @@ ul {
     flex-wrap: wrap;
 }
 
+.time{
+    color: black;
+    font-size: 12px;
+    margin-left: 85%;
+}
+
 textarea{
     height: 80px; 
     width: 90%;
@@ -222,4 +228,27 @@ textarea{
 
 .list{
     list-style-type: none;
+}
+
+.privateChat{
+    position: fixed;
+}
+
+.privateChat li{
+    display: inline;
+    color: white;
+    background-color: gray;
+    border: 1px solid black;
+    margin-right: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.privateChat li:hover{
+    background: black;
+    cursor: pointer;
+}
+
+.privateChat .pmList.active{
+    background-color: red;
 }
