@@ -615,7 +615,7 @@ export class ChatWindowComponent implements AfterViewInit {
             var pmHolders = pmUsers[j].innerHTML
             
             if(newMessageUser == pmHolders){
-              (<HTMLElement>pmUsers[j]).style.border = '2px solid green';
+              (<HTMLElement>pmUsers[j]).style.border = '3px solid Orange';
             }
           }
         }
