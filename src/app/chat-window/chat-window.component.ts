@@ -577,7 +577,9 @@ export class ChatWindowComponent implements AfterViewInit {
         })
         
         for(var key in returnArr[0]){
-          if(returnArr[0][key].user == target){                  
+          
+          if(returnArr[0][key].user == target){     
+            var isAlerted: boolean = false;
 
             let output = JSON.parse(`
               {
@@ -585,8 +587,30 @@ export class ChatWindowComponent implements AfterViewInit {
               }
             
             `)
-
-            this.db.database.ref('logins/users/' + key + '/newMessages').push(output)
+              
+            let keyHolder = key;
+            this.db.database.ref('logins/users/' + key + '/newMessages').once('value',
+          
+            snapShot=>{
+              var returnArr = []
+              snapShot.forEach(childSnapshot =>{
+                var item = childSnapshot.val();
+                
+                returnArr.push(item);
+              })
+              
+              for(var i = 0;i<returnArr.length;i++){
+                if(returnArr[i].newMessageUser == user2){
+                  isAlerted = true;
+                  break;
+                }
+              }
+              if(!isAlerted){
+                this.db.database.ref('logins/users/' + keyHolder + '/newMessages').push(output)
+              }
+            })
+            
+            
           }
         }
       })
