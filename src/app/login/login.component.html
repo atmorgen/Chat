@@ -9,9 +9,11 @@
         </div>
     </div>
     <div id='loginExists'></div>
+    <div id="overlay"></div>
 
     <div id='newUserScreen'>
         <div id="closeBtnDiv"><a (click)='closeNewUser()' class="closebtn">&times;</a></div>
+        <h2>Create Account</h2>
         <div>UserName: <input type='text' id ='newUserName'></div>
         <div>PassWord: <input type='text' id='newPassword'></div>
         <button (click)='createNewUser()' id='loginButton'>Create User</button>
