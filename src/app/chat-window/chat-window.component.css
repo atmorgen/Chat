@@ -33,19 +33,31 @@ ul {
     text-align: center;
 }
 
+#chatHeader.hidden {
+    display: none;
+}
+
+#messageHeader.hidden {
+    display: none;
+}
+
+
 #assignmentHeader{
-    width: 80%;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-#assignmentHeader p{
+#assignmentHeader h5{
     padding-top: 6px;
     padding-bottom: 6px;
     margin-top: 0px;
     margin-bottom: 0px;
     margin-right: 20px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
 }
 
 #assignmentHeader button{
@@ -64,14 +76,30 @@ ul {
 }
 
 #filterHeader {
-    width: 20%;
+    width: 23%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
  }
 
- #filterHeader p {
+ #filterHeader h5 {
     padding-top: 6px;
     padding-bottom: 6px;
     margin-top: 0px;
     margin-bottom: 0px;
+    margin-left: 20px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+ }
+
+ #filterHeader i {
+     color: rgb(255, 157, 0);
+     cursor: pointer;
+ }
+
+ #filterHeader p:hover {
+     text-decoration: underline;
  }
 
  #mainDiv {
@@ -85,7 +113,6 @@ ul {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: center;
     width: 80%;
     font-family: 'Nunito', sans-serif;
     background: rgb(3, 3, 3, 0.8)
@@ -211,10 +238,15 @@ ul {
     flex-wrap: wrap;
 }
 
+#nameTime {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .time{
     color: black;
     font-size: 12px;
-    margin-left: 85%;
 }
 
 textarea{
@@ -224,6 +256,7 @@ textarea{
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 30px;
+    align-self: center;
 }
 
 .list{
@@ -231,24 +264,61 @@ textarea{
 }
 
 .privateChat{
-    position: fixed;
+    /*position: fixed;*/
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    overflow-x: auto;
+    overflow-y: hidden;
+    color: white;
+}
+#pmNames {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.privateChat i {
+    margin-right: 10px;
 }
 
 .privateChat li{
-    display: inline;
-    color: white;
-    background-color: gray;
-    border: 1px solid black;
-    margin-right: 15px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 10px;
 }
 
 .privateChat li:hover{
     background: black;
     cursor: pointer;
+    background: rgb(255, 157, 0);
 }
 
 .privateChat .pmList.active{
-    background-color: red;
+    background: rgb(255, 157, 0);
+    color: white;
 }
+
+/*material icons*/
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;  /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+  
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+  
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+  
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+  }

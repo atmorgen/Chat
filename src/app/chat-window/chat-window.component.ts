@@ -542,6 +542,9 @@ export class ChatWindowComponent implements AfterViewInit {
       })
     this.removeNewPMsAlert(target)
     this.db.database.ref('chat').off('value')
+
+    document.getElementById('chatHeader').classList.add('hidden');
+    document.getElementById('messageHeader').classList.remove('hidden');
   }
 
   highLight(e){
@@ -691,6 +694,9 @@ export class ChatWindowComponent implements AfterViewInit {
     for(var i = 0;i<document.getElementsByClassName('pmList').length;i++){
       document.getElementsByClassName('pmList')[i].className = 'pmList'
     }
+
+    document.getElementById('chatHeader').classList.remove('hidden');
+    document.getElementById('messageHeader').classList.add('hidden');
   }
 
   //#endregion
