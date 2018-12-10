@@ -544,7 +544,7 @@ export class ChatWindowComponent implements AfterViewInit {
     this.db.database.ref('chat').off('value')
 
     document.getElementById('chatHeader').classList.add('hidden');
-    document.getElementById('messageHeader').classList.remove('hidden');
+    document.getElementById('messageHeader').classList.remove('hidden')
   }
 
   highLight(e){
@@ -642,7 +642,7 @@ export class ChatWindowComponent implements AfterViewInit {
             var pmHolders = pmUsers[j].innerHTML
             
             if(newMessageUser == pmHolders){
-              (<HTMLElement>pmUsers[j]).style.border = '3px solid Orange';
+              (<HTMLElement>pmUsers[j]).style.borderLeft = '3px solid Orange';
             }
           }
         }
@@ -675,7 +675,7 @@ export class ChatWindowComponent implements AfterViewInit {
 
             var pmUsers = document.getElementsByClassName('pmList')
             for(var j = 0;j<pmUsers.length;j++){
-              (<HTMLElement>pmUsers[j]).style.border = '1px solid black'
+              (<HTMLElement>pmUsers[j]).style.border = '0px solid black'
             }
           }
         }

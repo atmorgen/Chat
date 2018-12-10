@@ -293,8 +293,8 @@ textarea{
 }
 
 .privateChat .pmList.active{
-    background: rgb(255, 157, 0);
-    color: white;
+    background: rgb(189, 244, 0);
+    color: black;
 }
 
 /*material icons*/
