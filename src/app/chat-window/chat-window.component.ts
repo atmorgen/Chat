@@ -125,7 +125,7 @@ export class ChatWindowComponent implements AfterViewInit {
           elList.push(el)
           return el
         })
-
+        
         this.assignmentsNgFor.push(jsonHolder[key])
 
         if(isURL){
@@ -179,7 +179,7 @@ export class ChatWindowComponent implements AfterViewInit {
       location = 'privateMessages/sessions/' + this.pmKey + '/session';
       this.SetPMAlert()
     }
-    
+
     this.postChatData(location,output);
   }
 
@@ -512,12 +512,16 @@ export class ChatWindowComponent implements AfterViewInit {
   }
 
   pmKey;
-  openPM(e){
+  async openPM(e){
     var target = e.target.innerText
     this.havingPM = true;
     this.assignmentsNgFor = JSON.parse('[]')
     this.highLight(e)
-
+    
+    var location = 'privateMessages/sessions/' + this.pmKey + '/session'
+    //this is for remove the previous PM subscription
+    await this.db.database.ref(location).off('value')
+    
     //gets the PM key
     for(var i = 0;i<this.privateMessagesNgFor.length;i++){
       if(this.privateMessagesNgFor[i].userTarget == target){
@@ -526,7 +530,10 @@ export class ChatWindowComponent implements AfterViewInit {
       }
     }
     
-    var dbUpdate = this.db.database.ref('privateMessages/sessions/' + this.pmKey + '/session').on('value',
+    //new location
+    location = 'privateMessages/sessions/' + this.pmKey + '/session'
+
+    var dbUpdate = this.db.database.ref(location).on('value',
       snapshot =>{
         var returnArr = [];
         snapshot.forEach(childSnapshot=> {
@@ -534,6 +541,7 @@ export class ChatWindowComponent implements AfterViewInit {
           
           returnArr.push(item);
         });
+        
         this.updateNgFor(returnArr)
 
         setTimeout(() => {
@@ -542,6 +550,9 @@ export class ChatWindowComponent implements AfterViewInit {
       })
     this.removeNewPMsAlert(target)
     this.db.database.ref('chat').off('value')
+
+    document.getElementById('chatHeader').classList.add('hidden');
+    document.getElementById('messageHeader').classList.remove('hidden')
   }
 
   highLight(e){
@@ -577,7 +588,9 @@ export class ChatWindowComponent implements AfterViewInit {
         })
         
         for(var key in returnArr[0]){
-          if(returnArr[0][key].user == target){                  
+          
+          if(returnArr[0][key].user == target){     
+            var isAlerted: boolean = false;
 
             let output = JSON.parse(`
               {
@@ -585,8 +598,30 @@ export class ChatWindowComponent implements AfterViewInit {
               }
             
             `)
-
-            this.db.database.ref('logins/users/' + key + '/newMessages').push(output)
+              
+            let keyHolder = key;
+            this.db.database.ref('logins/users/' + key + '/newMessages').once('value',
+          
+            snapShot=>{
+              var returnArr = []
+              snapShot.forEach(childSnapshot =>{
+                var item = childSnapshot.val();
+                
+                returnArr.push(item);
+              })
+              
+              for(var i = 0;i<returnArr.length;i++){
+                if(returnArr[i].newMessageUser == user2){
+                  isAlerted = true;
+                  break;
+                }
+              }
+              if(!isAlerted){
+                this.db.database.ref('logins/users/' + keyHolder + '/newMessages').push(output)
+              }
+            })
+            
+            
           }
         }
       })
@@ -615,7 +650,7 @@ export class ChatWindowComponent implements AfterViewInit {
             var pmHolders = pmUsers[j].innerHTML
             
             if(newMessageUser == pmHolders){
-              (<HTMLElement>pmUsers[j]).style.border = '3px solid Orange';
+              (<HTMLElement>pmUsers[j]).style.borderLeft = '3px solid Orange';
             }
           }
         }
@@ -648,7 +683,7 @@ export class ChatWindowComponent implements AfterViewInit {
 
             var pmUsers = document.getElementsByClassName('pmList')
             for(var j = 0;j<pmUsers.length;j++){
-              (<HTMLElement>pmUsers[j]).style.border = '1px solid black'
+              (<HTMLElement>pmUsers[j]).style.border = '0px solid black'
             }
           }
         }
@@ -667,6 +702,9 @@ export class ChatWindowComponent implements AfterViewInit {
     for(var i = 0;i<document.getElementsByClassName('pmList').length;i++){
       document.getElementsByClassName('pmList')[i].className = 'pmList'
     }
+
+    document.getElementById('chatHeader').classList.remove('hidden');
+    document.getElementById('messageHeader').classList.add('hidden');
   }
 
   //#endregion

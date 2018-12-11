@@ -19,15 +19,18 @@ export class LoginComponent implements OnInit {
   }
 
   openNewUserScreen(){
-    document.getElementById('newUserScreen').style.display = 'inline-block'
+    document.getElementById('newUserScreen').style.display = 'flex'
+    document.getElementById('overlay').style.display = 'inline-block'
   }
 
   closeNewUser(){
     document.getElementById('newUserScreen').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none'
   }
 
   createNewUser(){
     this.getData()
+    document.getElementById('overlay').style.display = 'none'
   }
 
   getData(){
@@ -69,11 +72,10 @@ export class LoginComponent implements OnInit {
 
   /* FOR LOGIN */
   login(){
-
+    
     let userName = (<HTMLInputElement>document.getElementById('userName')).value
     let passWord = (<HTMLInputElement>document.getElementById('passWord')).value
     let userJSON = this.glc.userInfoJSON(userName,passWord)
-
 
     var dbUpdate = this.db.database.ref('logins/users').once('value',
       snapshot =>{
@@ -84,6 +86,7 @@ export class LoginComponent implements OnInit {
           returnArr.push(item);
         });
         let isUnique = this.glc.checkforUniquewithPass(userJSON,returnArr)
+        console.log(isUnique)
         if(isUnique){
           document.getElementById('loginExists').innerHTML = 'This ain\'t no login'
         }else{

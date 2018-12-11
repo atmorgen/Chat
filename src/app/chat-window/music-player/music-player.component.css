@@ -1,0 +1,66 @@
+#musicPlayer{
+    color: white;
+    background: rebeccapurple;
+}
+
+#topLineDiv {
+    display: flex;
+    justify-content: space-between;
+}
+
+#topLineDiv i {
+    float: right;
+}
+
+#controlsDiv {
+    display: flex;
+    justify-content: space-evenly;
+    cursor: pointer;
+}
+
+#controlsDiv i {
+    padding: 10px 0px;
+}
+
+#musicArtwork {
+    display: flex;
+    justify-content: center;
+}
+
+#downArrow {
+    cursor: pointer;
+}
+
+#upArrow {
+    cursor: pointer;
+}
+
+#musicArtwork.hidden {
+    display: none;
+}
+
+#downArrow.hidden {
+    display: none;
+}
+
+#upArrow.hidden {
+    display: none;
+}
+
+#songInfo {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-bottom: 10px;
+    padding-top: 5px;
+    margin-left: 5px;
+}
+
+#songName {
+    text-decoration: none;
+    font-size: 14px;
+}
+
+#artistName {
+    font-size: 12px;
+}
