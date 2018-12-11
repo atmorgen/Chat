@@ -125,7 +125,7 @@ export class ChatWindowComponent implements AfterViewInit {
           elList.push(el)
           return el
         })
-
+        
         this.assignmentsNgFor.push(jsonHolder[key])
 
         if(isURL){
@@ -179,7 +179,7 @@ export class ChatWindowComponent implements AfterViewInit {
       location = 'privateMessages/sessions/' + this.pmKey + '/session';
       this.SetPMAlert()
     }
-    
+
     this.postChatData(location,output);
   }
 
@@ -512,12 +512,16 @@ export class ChatWindowComponent implements AfterViewInit {
   }
 
   pmKey;
-  openPM(e){
+  async openPM(e){
     var target = e.target.innerText
     this.havingPM = true;
     this.assignmentsNgFor = JSON.parse('[]')
     this.highLight(e)
-
+    
+    var location = 'privateMessages/sessions/' + this.pmKey + '/session'
+    //this is for remove the previous PM subscription
+    await this.db.database.ref(location).off('value')
+    
     //gets the PM key
     for(var i = 0;i<this.privateMessagesNgFor.length;i++){
       if(this.privateMessagesNgFor[i].userTarget == target){
@@ -526,7 +530,10 @@ export class ChatWindowComponent implements AfterViewInit {
       }
     }
     
-    var dbUpdate = this.db.database.ref('privateMessages/sessions/' + this.pmKey + '/session').on('value',
+    //new location
+    location = 'privateMessages/sessions/' + this.pmKey + '/session'
+
+    var dbUpdate = this.db.database.ref(location).on('value',
       snapshot =>{
         var returnArr = [];
         snapshot.forEach(childSnapshot=> {
@@ -534,6 +541,7 @@ export class ChatWindowComponent implements AfterViewInit {
           
           returnArr.push(item);
         });
+        
         this.updateNgFor(returnArr)
 
         setTimeout(() => {

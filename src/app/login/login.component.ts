@@ -223,14 +223,6 @@ export class LoginComponent implements OnInit {
       this.db.database.ref('onlineUsers/users/' + key).update({'user':userName})
     }
   }
-<<<<<<< HEAD
-
-
-  
-
-
-=======
->>>>>>> 270988e3db1b6eb275fb20e321d1af7e56db5faa
 }
 
 
