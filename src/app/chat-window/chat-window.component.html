@@ -4,30 +4,38 @@
     <div id="headerBar">
       <div id="filterHeader"><p>Users</p></div>
         <div id="assignmentHeader">
-          <p>Chat</p>
+          <button (click)='openMainChat()'>Back To Chat</button><p>Chat</p>
           <button (click)='logOut()'>Logout</button>
         </div>
     </div>
 
     <div id="mainDiv">
 
-    <app-users-window style="width: 20%;"></app-users-window>
-    
-    <div id="rightSide">
-      <div id="assignmentViewCanvas">
-        <div class='buttonForloop' *ngFor="let json of assignmentsNgFor">
-          <div class="assignView">
-            <li class='list'>
-              <ul class='nameText'>Name: {{json.user}}</ul>
-              <ul class='text'>{{json.text}}</ul>
-            </li>
+      <app-users-window style="width: 20%;"></app-users-window>
+      
+      <div id="rightSide">
+        <div id="assignmentViewCanvas">
+
+          <ul class='privateChat'>
+              <li class='pmList' *ngFor="let json of privateMessagesNgFor"  (click)='openPM($event)'>{{json.userTarget}}</li>
+          </ul>
+
+
+
+
+          <div class='buttonForloop' *ngFor="let json of assignmentsNgFor">
+            <div class="assignView">
+              <li class='list'>
+                <div style="display: flex;"><ul class='nameText'>{{json.user}}</ul><div class='time'>{{json.time}}</div></div>
+                <ul class='text'>{{json.text}}</ul>
+              </li>
+            </div>
           </div>
         </div>
+        
+        <textarea id="textWindow" type="text"></textarea>
+        <div id='refKey'></div>
       </div>
-      
-      <textarea id="textWindow" type="text"></textarea>
-      <div id='refKey'></div>
-    </div>
     </div>
   </div>
 </div>
