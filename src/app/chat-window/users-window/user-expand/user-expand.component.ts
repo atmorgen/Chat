@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, ComponentFactoryResolver, ApplicationRef, Injector } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { GlobalJSONLibraryComponent } from '../../../global-jsonlibrary/global-jsonlibrary.component'
 
@@ -9,11 +9,12 @@ import { GlobalJSONLibraryComponent } from '../../../global-jsonlibrary/global-j
 })
 export class UserExpandComponent implements OnInit {
 
-  glc: GlobalJSONLibraryComponent = new GlobalJSONLibraryComponent;
+  glc: GlobalJSONLibraryComponent = new GlobalJSONLibraryComponent(this.componentFactoryResolver,this.appRef,this.injector);
 
-  constructor(private elRef: ElementRef,private db: AngularFireDatabase) { }
+  constructor(private elRef: ElementRef,private db: AngularFireDatabase,private componentFactoryResolver: ComponentFactoryResolver,
+    private appRef: ApplicationRef, private injector: Injector) { }
 
-  ngOnInit() {
+  ngOnInit() { 
   }
 
   /* Checks to make sure privateMessage doesn't already exist.  If it doesn't then create a private

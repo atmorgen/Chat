@@ -9,7 +9,7 @@
             </i>
       </div>
         <div id="assignmentHeader">
-            <div></div>
+            <div><button (click)='openGameMode()'>Game Mode!</button></div>
             <h5 id="chatHeader">Chat</h5>
             <h5 id="messageHeader" class="hidden">Private Message</h5>
             <div id="headerRight">
@@ -26,15 +26,11 @@
       
       <div id="rightSide">
 
-          <div class='privateChat'>
-              <div id="pmNames"><li class='pmList' *ngFor="let json of privateMessagesNgFor"  (click)='openPM($event)'>{{json.userTarget}}</li></div>
-          </div>
-
+        <div class='privateChat'>
+            <div id="pmNames"><li class='pmList' *ngFor="let json of privateMessagesNgFor"  (click)='openPM($event)'>{{json.userTarget}}</li></div>
+        </div>
+        <app-shooter></app-shooter>
         <div id="assignmentViewCanvas">
-
-
-
-
           <div class='buttonForloop' *ngFor="let json of assignmentsNgFor">
             <div class="assignView">
               <li class='list'>

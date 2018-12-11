@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ComponentFactoryResolver, ApplicationRef, Injector } from '@angular/core';
 import { GlobalJSONLibraryComponent } from '../global-jsonlibrary/global-jsonlibrary.component'
 import { AngularFireDatabase } from 'angularfire2/database'
 
@@ -10,9 +10,10 @@ import { AngularFireDatabase } from 'angularfire2/database'
 export class LoginComponent implements OnInit {
 
   hasStorage: boolean = false
-  glc: GlobalJSONLibraryComponent = new GlobalJSONLibraryComponent;
+  glc: GlobalJSONLibraryComponent = new GlobalJSONLibraryComponent(this.componentFactoryResolver,this.appRef,this.injector);
 
-  constructor(private db: AngularFireDatabase) { }
+  constructor(private db: AngularFireDatabase,private componentFactoryResolver: ComponentFactoryResolver,
+    private appRef: ApplicationRef, private injector: Injector) { }
 
   ngOnInit() {
     this.checkforStorage()
@@ -86,7 +87,7 @@ export class LoginComponent implements OnInit {
           returnArr.push(item);
         });
         let isUnique = this.glc.checkforUniquewithPass(userJSON,returnArr)
-        console.log(isUnique)
+        
         if(isUnique){
           document.getElementById('loginExists').innerHTML = 'This ain\'t no login'
         }else{

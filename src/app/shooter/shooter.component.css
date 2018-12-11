@@ -1,0 +1,17 @@
+#gameMode{
+    position: absolute;
+    background-color: lightgray;
+    margin-top: 1%;
+    margin-left: 2%;
+    height: 85%;
+    width: 77%;
+    border: 1px solid orange;
+}
+
+#joinGameButton{
+    position: absolute;
+    width: 20%;
+    margin-left: 40%;
+    margin-right: 40%;
+    margin-top: 30%;
+}

@@ -553,6 +553,7 @@ export class ChatWindowComponent implements AfterViewInit {
 
     document.getElementById('chatHeader').classList.add('hidden');
     document.getElementById('messageHeader').classList.remove('hidden')
+    this.closeGameMode();
   }
 
   highLight(e){
@@ -705,8 +706,21 @@ export class ChatWindowComponent implements AfterViewInit {
 
     document.getElementById('chatHeader').classList.remove('hidden');
     document.getElementById('messageHeader').classList.add('hidden');
+    this.closeGameMode();
   }
 
   //#endregion
+
+  openGameMode(){
+    document.getElementById('assignmentViewCanvas').style.display = 'none';
+    document.getElementById('textWindow').style.display = 'none';
+    document.getElementById('gameMode').style.display = 'flex';
+  }
+
+  closeGameMode(){
+    document.getElementById('assignmentViewCanvas').style.display = 'inline-block';
+    document.getElementById('textWindow').style.display = 'flex';
+    document.getElementById('gameMode').style.display = 'none';
+  }
 
 }

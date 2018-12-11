@@ -15,6 +15,8 @@ import { IgnoreThisComponent } from './ignore-this/ignore-this.component';
 import { UserExpandComponent } from './chat-window/users-window/user-expand/user-expand.component';
 import { PrivateChatComponent } from './private-chat/private-chat.component';
 import { MusicPlayerComponent } from '../app/chat-window/music-player/music-player.component';
+import { ShooterComponent } from './shooter/shooter.component';
+import { PlayerComponent } from './shooter/player/player.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,9 @@ import { MusicPlayerComponent } from '../app/chat-window/music-player/music-play
     IgnoreThisComponent,
     UserExpandComponent,
     PrivateChatComponent,
-    MusicPlayerComponent
+    MusicPlayerComponent,
+    ShooterComponent,
+    PlayerComponent
   ],
   imports: [
     BrowserModule,
