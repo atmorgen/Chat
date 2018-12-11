@@ -19,15 +19,18 @@ export class LoginComponent implements OnInit {
   }
 
   openNewUserScreen(){
-    document.getElementById('newUserScreen').style.display = 'inline-block'
+    document.getElementById('newUserScreen').style.display = 'flex'
+    document.getElementById('overlay').style.display = 'inline-block'
   }
 
   closeNewUser(){
     document.getElementById('newUserScreen').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none'
   }
 
   createNewUser(){
     this.getData()
+    document.getElementById('overlay').style.display = 'none'
   }
 
   getData(){
