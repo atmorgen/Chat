@@ -20,35 +20,76 @@ export class ShooterComponent implements OnInit {
     document.getElementById('gameMode').style.display = 'none';
   }
 
-  x;
-  y;
-
-  @HostListener('mousemove', ['$event'])
-    onMousemove(event: MouseEvent) {
-      this.x = event.layerX
-      this.y = event.layerY
-    }
-
   @HostListener('mousedown', ['$event'])
     onmousedown(e){
-      //console.log(e)
-      //console.log('x: ' + this.x)
-      //console.log('y: ' + this.y)
+      //this.move(e.layerX,e.layerY)
+    }
+
+  @HostListener('document:keydown', ['$event'])
+    onkeydown(e){
+      this.move(e)
     }
   
   player;
   joinGame(){
-    this.glc.appendComponentToBody(PlayerComponent,'gameMode')
-    this.player = document.getElementById('player')
 
-    const width = document.getElementById('gameMode').offsetWidth
-    const height = document.getElementById('gameMode').offsetHeight
+    document.getElementById('joinGameButton').style.display = 'none';
+    var width = document.getElementById('gameMode').offsetWidth;
+    var height = document.getElementById('gameMode').offsetHeight;
+
+    if(this.player == undefined){
+      this.glc.appendComponentToBody(PlayerComponent,'gameMode')
+      this.player = document.getElementById('player')
+    }
 
     const rngWidth = Math.floor((Math.random() * width) + 1);
     const rngHeight = Math.floor((Math.random() * height) + 1);
 
-    this.player.style.left = width + 'px';
-    console.log(rngWidth)
+    this.player.style.left = rngWidth + 'px';
+    this.player.style.top = rngHeight + 'px';
+  }
+
+  move(e){
+    
+    let x = parseFloat(this.player.style.left);
+    let y = parseFloat(this.player.style.top);
+    let key = e.key;
+
+    let width = document.getElementById('gameMode').offsetWidth
+    let height = document.getElementById('gameMode').offsetHeight
+
+    let step = 30;
+
+    switch(key){
+      case 'a' :
+        if((x-step) < 0){
+          this.player.style.left = '5px';
+        }else{
+          this.player.style.left = (x-step) + 'px';
+        }        
+        break;
+      case 's':
+        if((y+step) > height-50){
+          this.player.style.top = (height-50) + 'px';
+        }else{
+          this.player.style.top = (y+step) + 'px';
+        }
+        break;
+      case 'd':
+        if((x+step) > width){
+          this.player.style.left = (width-20) + 'px';
+        }else{
+          this.player.style.left = (x+step) + 'px';
+        }
+        break;
+      case 'w':
+        if((y-step) < 0){
+          this.player.style.top = '-10px';
+        }else{
+          this.player.style.top = (y-step) + 'px';
+        }
+        break;
+    }
   }
   
   
