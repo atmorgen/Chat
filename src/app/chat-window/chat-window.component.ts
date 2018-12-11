@@ -28,7 +28,8 @@ export class ChatWindowComponent implements AfterViewInit {
     //subscribe on init
     this.getData();
     this.newMessage();
-    this.startFlash()
+    this.startFlash();
+    this.searchForPing();
   }
   
   userPMSwitch(e){
@@ -68,31 +69,7 @@ export class ChatWindowComponent implements AfterViewInit {
           this.giphyCall(callChecks[1]);
         }
       }
-    }
-  
-    logOut(){
-
-      let local = JSON.parse(localStorage.userInfo)
-  
-      var dbUpdate = this.db.database.ref('onlineUsers').once('value',
-        snapshot =>{
-          var returnArr = [];
-          snapshot.forEach(childSnapshot=> {
-            var item = childSnapshot.val();
-            
-            returnArr.push(item);
-          });
-  
-          for(var key in returnArr[0]){
-            if(returnArr[0][key].user == local.user){
-              this.db.database.ref('onlineUsers/users/' + key).remove()
-              break;
-            }
-          }
-          localStorage.clear();
-          location.reload();
-      }) 
-    }
+    } 
 
   getData(){
     //find 'assignments reference in database and subscribe to it
@@ -437,5 +414,58 @@ export class ChatWindowComponent implements AfterViewInit {
     let location = 'chat/sessions/' + key + '/session' ;
     
     this.postData(location,output);
+  }
+
+  isLoggedOut: boolean = false;
+  logOut(){
+
+    let local = JSON.parse(localStorage.userInfo)
+
+    var dbUpdate = this.db.database.ref('onlineUsers').once('value',
+      async snapshot =>{
+        var returnArr = [];
+        snapshot.forEach(childSnapshot=> {
+          var item = childSnapshot.val();
+          
+          returnArr.push(item);
+        });
+
+        for(var key in returnArr[0]){
+          if(returnArr[0][key].user == local.user){
+            await this.db.database.ref('onlineUsers/users/' + key).remove()
+            break;
+          }
+        }
+        this.isLoggedOut = true;
+        localStorage.clear();
+        location.reload();
+    }) 
+  }
+
+  /*Respond to Ping */
+
+  /* Checking for Ping and responding to it */
+  searchForPing(){
+    var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
+    this.db.database.ref('onlineUsers/users/' + key).on('value',x =>{
+      this.respondToPing()
+    })   
+  }
+
+  respondToPing(){
+    var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
+
+    var returnArr = [];
+    this.db.database.ref('onlineUsers/users/' + key).once('value',async snapshot =>{
+      snapshot.forEach(childSnapshot=> {
+        var item = childSnapshot.val();
+        
+        returnArr.push(item);
+      });
+      console.log('test')
+      await console.log(returnArr)
+    }) 
+
+    this.db.database.ref('onlineUsers/users/' + key).update({'isOnline':true})
   }
 }

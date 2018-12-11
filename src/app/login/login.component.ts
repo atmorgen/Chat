@@ -123,7 +123,6 @@ export class LoginComponent implements OnInit {
     this.compareToUsers(userName)
     this.checkForAFK()
     this.return()
-    this.searchForPing()
   }
 
   compareToUsers(userName){
@@ -215,18 +214,7 @@ export class LoginComponent implements OnInit {
   }
 
 
-  /* Checking for Ping and responding to it */
-  searchForPing(){
-    var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
-    this.db.database.ref('onlineUsers/users/' + key).on('value',x =>{
-      this.respondToPing()
-    })   
-  }
-
-  respondToPing(){
-    var key = JSON.parse(localStorage.getItem('userInfo')).onlineKey
-    this.db.database.ref('onlineUsers/users/' + key).update({'isOnline':true})
-  }
+  
 
 
 }
