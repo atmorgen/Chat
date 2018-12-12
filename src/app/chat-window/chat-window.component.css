@@ -14,7 +14,6 @@ ul {
     margin: 0px;
 }
 
-
 #headerBar {
     position: fixed;
     display: flex;
@@ -30,6 +29,12 @@ ul {
     background: gray;
     color: white;
     text-align: center;
+}
+
+#chatImage {
+    height: 38px;
+    margin-bottom: 10px;
+    cursor: pointer;
 }
 
 #chatHeader.hidden {
