@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener, ComponentFactoryResolver,
   ApplicationRef, Injector } from '@angular/core';
 import { GlobalJSONLibraryComponent } from '../global-jsonlibrary/global-jsonlibrary.component'
 import { PlayerComponent } from './player/player.component'
+import { AngularFireDatabase } from 'angularfire2/database'
 
 @Component({
   selector: 'app-shooter',
@@ -11,23 +12,19 @@ import { PlayerComponent } from './player/player.component'
 })
 export class ShooterComponent implements OnInit {
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver,
+  constructor(private db: AngularFireDatabase,private componentFactoryResolver: ComponentFactoryResolver,
     private appRef: ApplicationRef, private injector: Injector) { }
 
   glc:GlobalJSONLibraryComponent = new GlobalJSONLibraryComponent(this.componentFactoryResolver,this.appRef,this.injector)
+  inGame: boolean = false;
 
   ngOnInit() {
     document.getElementById('gameMode').style.display = 'none';
   }
 
-  @HostListener('mousedown', ['$event'])
-    onmousedown(e){
-      //this.move(e.layerX,e.layerY)
-    }
-
   @HostListener('document:keydown', ['$event'])
     onkeydown(e){
-      this.move(e)
+      if(this.inGame) this.move(e)
     }
   
   player;
@@ -47,6 +44,8 @@ export class ShooterComponent implements OnInit {
 
     this.player.style.left = rngWidth + 'px';
     this.player.style.top = rngHeight + 'px';
+
+    this.inGame = true;
   }
 
   move(e){
@@ -90,8 +89,24 @@ export class ShooterComponent implements OnInit {
         }
         break;
     }
+
+    let xOutput = this.player.style.left;
+    let yOutput = this.player.style.top;
+
+    this.postData(xOutput,yOutput)
   }
   
-  
+  postData(x,y){
+
+    let output = JSON.parse(`
+      {
+        "player":"${JSON.parse(localStorage.getItem('userInfo')).user}",
+        "x":"${x}",
+        "y":"${y}"
+      }    
+    `)
+
+      console.log(output)
+  }
 
 }
