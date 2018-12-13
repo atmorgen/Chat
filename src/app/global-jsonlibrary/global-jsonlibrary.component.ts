@@ -73,6 +73,8 @@ export class GlobalJSONLibraryComponent implements OnInit {
 
     //Append DOM element to the body
     document.getElementById(target).appendChild(domElem)
+
+    return domElem
   }
 
   remove(target){
